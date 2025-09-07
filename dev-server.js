@@ -9,7 +9,7 @@ import qrcode from 'qrcode-terminal';
 // Load environment variables
 dotenv.config({ path: '.env' });
 
-const dev = process.env.NODE_ENV !== 'production';
+const dev = process.env.NODE_ENV !== 'development';
 const httpPort = 3000;
 const httpsPort = 3001;
 const certPath = process.env.SSL_CERTIFICATE;
