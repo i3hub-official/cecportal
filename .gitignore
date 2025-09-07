@@ -51,3 +51,4 @@ next-env.d.ts
 key-change-log.txt
 
 /certs
+/src/generated/prisma
