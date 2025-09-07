@@ -52,3 +52,6 @@ key-change-log.txt
 
 /certs
 /src/generated/prisma
+
+.vercel
+.env*.local
