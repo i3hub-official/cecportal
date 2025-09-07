@@ -17,8 +17,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Play,
-  Check,
-  UserCheck,
+    UserCheck,
   Shield,
   Bookmark,
 } from "lucide-react";
