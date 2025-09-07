@@ -5,21 +5,17 @@ import Link from "next/link";
 import {
   BookOpen,
   Calendar,
-  CheckCircle,
   FileText,
   Users,
-  Award,
   Clock,
-  Phone,
-  MapPin,
-  Mail,
   ArrowRight,
   ChevronLeft,
   ChevronRight,
-  Play,
-    UserCheck,
-  Shield,
-  Bookmark,
+  Download,
+  School,
+  UserPlus,
+  FileCheck,
+  BookText,
 } from "lucide-react";
 
 export default function ExamRegistrationLandingPage() {
@@ -45,44 +41,54 @@ export default function ExamRegistrationLandingPage() {
 
   const features = [
     {
-      icon: <UserCheck className="w-6 h-6" />,
-      title: "Easy Registration",
+      icon: <School className="w-6 h-6" />,
+      title: "School Accounts",
       description:
-        "Simple step-by-step process to register students for mock examinations",
+        "Create dedicated accounts for your school to manage all student registrations",
     },
     {
-      icon: <Shield className="w-6 h-6" />,
-      title: "Secure System",
-      description:
-        "Protected student data with Catholic Education Commission standards",
+      icon: <UserPlus className="w-6 h-6" />,
+      title: "Enroll Candidates",
+      description: "Easily enroll multiple students with bulk upload options",
     },
     {
-      icon: <Bookmark className="w-6 h-6" />,
+      icon: <Download className="w-6 h-6" />,
+      title: "Download Exam Slips",
+      description:
+        "Generate and download exam slips for all registered students",
+    },
+    {
+      icon: <FileCheck className="w-6 h-6" />,
       title: "Track Progress",
-      description: "Monitor registration status and exam preparation materials",
-    },
-    {
-      icon: <Award className="w-6 h-6" />,
-      title: "Performance Analytics",
-      description: "Get insights on student performance after exam completion",
+      description: "Monitor registration status and payment confirmations",
     },
   ];
 
-  const examSubjects = [
-    "English Language",
-    "Mathematics",
-    "Physics",
-    "Chemistry",
-    "Biology",
-    "Economics",
-    "Literature in English",
-    "Government",
-    "Commerce",
-    "Accounting",
-    "Christian Religious Studies",
-    "Geography",
-    "Further Mathematics",
-    "Agricultural Science",
+  const resources = [
+    {
+      title: "Registration Guide",
+      description: "Step-by-step instructions for the registration process",
+      icon: <BookText className="w-8 h-8" />,
+      link: "#",
+    },
+    {
+      title: "Syllabus Download",
+      description: "Complete syllabus for all examination subjects",
+      icon: <Download className="w-8 h-8" />,
+      link: "#",
+    },
+    {
+      title: "Timetable",
+      description: "Examination schedule and timing details",
+      icon: <Calendar className="w-8 h-8" />,
+      link: "#",
+    },
+    {
+      title: "FAQs",
+      description: "Frequently asked questions and answers",
+      icon: <FileText className="w-8 h-8" />,
+      link: "#",
+    },
   ];
 
   useEffect(() => {
@@ -103,51 +109,9 @@ export default function ExamRegistrationLandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* Header */}
-      <header className="bg-card py-4 px-6 shadow-sm">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="bg-primary p-2 rounded-lg">
-              <BookOpen className="w-6 h-6 text-white" />
-            </div>
-            <span className="font-bold text-xl">CEC Okigwe</span>
-          </div>
-
-          <nav className="hidden md:flex gap-8">
-            <a href="#" className="hover:text-primary transition">
-              Home
-            </a>
-            <a href="#registration" className="hover:text-primary transition">
-              Registration
-            </a>
-            <a href="#subjects" className="hover:text-primary transition">
-              Subjects
-            </a>
-            <a href="#contact" className="hover:text-primary transition">
-              Contact
-            </a>
-          </nav>
-
-          <div className="flex gap-4">
-            <Link
-              href="/login"
-              className="px-4 py-2 rounded-md hover:bg-accent transition"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition"
-            >
-              Register
-            </Link>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden pt-16">
       {/* Hero Section */}
-      <section className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-card to-background overflow-hidden">
+      <section className="relative pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-card to-background overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="relative z-10">
@@ -166,16 +130,16 @@ export default function ExamRegistrationLandingPage() {
                   href="/registration"
                   className="bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 transition flex items-center justify-center gap-2"
                 >
-                  Register Now
+                  Begin Registration
                   <ArrowRight className="w-5 h-5" />
                 </Link>
 
                 <Link
-                  href="#instructions"
+                  href="#resources"
                   className="px-8 py-4 rounded-lg font-semibold border border-primary text-primary hover:bg-primary/10 transition flex items-center justify-center gap-2"
                 >
-                  <Play className="w-5 h-5" />
-                  View Instructions
+                  <Download className="w-5 h-5" />
+                  Resources
                 </Link>
               </div>
             </div>
@@ -184,7 +148,7 @@ export default function ExamRegistrationLandingPage() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="bg-primary/10 w-full h-64 rounded-lg blur-3xl"></div>
               </div>
-              <div className="relative bg-white rounded-2xl p-8 shadow-lg">
+              <div className="relative bg-background rounded-2xl p-8 shadow-lg">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-semibold">Exam Registration</h2>
                   <div className="flex gap-2">
@@ -234,10 +198,10 @@ export default function ExamRegistrationLandingPage() {
 
                 <div className="mt-6 pt-6 border-t border-border">
                   <Link
-                    href="/registration"
+                    href="/school-registration"
                     className="block w-full bg-primary text-white text-center py-3 rounded-lg font-medium hover:bg-primary/90 transition"
                   >
-                    Begin Registration
+                    Create School Account
                   </Link>
                 </div>
               </div>
@@ -256,7 +220,7 @@ export default function ExamRegistrationLandingPage() {
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">2,500+</div>
-              <div className="text-foreground/70 mt-2">Students</div>
+              <div className="text-foreground/70 mt-2">Students Enrolled</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-primary">14</div>
@@ -275,11 +239,11 @@ export default function ExamRegistrationLandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Register With Us
+              For School Administrators
             </h2>
             <p className="text-foreground/70 max-w-2xl mx-auto">
-              Our platform provides a seamless experience for students, parents,
-              and school administrators
+              Comprehensive tools to manage your school&apos;s exam registration
+              process
             </p>
           </div>
 
@@ -304,36 +268,41 @@ export default function ExamRegistrationLandingPage() {
         </div>
       </section>
 
-      {/* Subjects Section */}
-      <section id="subjects" className="py-20 px-4 sm:px-6 lg:px-8 bg-card">
+      {/* Resources Section */}
+      <section id="resources" className="py-20 px-4 sm:px-6 lg:px-8 bg-card">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Available Subjects
+              Resources & Downloads
             </h2>
             <p className="text-foreground/70 max-w-2xl mx-auto">
-              Comprehensive coverage of WAEC and NECO examination subjects
+              Essential documents and guides for examination preparation
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
-            {examSubjects.map((subject, index) => (
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {resources.map((resource, index) => (
               <div
                 key={index}
-                className="bg-background rounded-lg p-4 text-center hover:shadow-md transition"
+                className="bg-background rounded-xl p-6 group hover:shadow-lg transition"
               >
-                <div className="text-sm font-medium">{subject}</div>
+                <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary mb-4">
+                  {resource.icon}
+                </div>
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {resource.title}
+                </h3>
+                <p className="text-foreground/70 text-sm mb-4">
+                  {resource.description}
+                </p>
+                <Link
+                  href={resource.link}
+                  className="text-primary font-medium text-sm hover:underline flex items-center gap-1"
+                >
+                  Download <ArrowRight className="w-4 h-4" />
+                </Link>
               </div>
             ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link
-              href="/subjects"
-              className="inline-flex items-center gap-2 text-primary font-semibold hover:underline"
-            >
-              View all subjects and syllabus <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </div>
       </section>
@@ -356,27 +325,27 @@ export default function ExamRegistrationLandingPage() {
           <div className="grid md:grid-cols-4 gap-8">
             <ProcessStep
               step="01"
-              title="Create Account"
-              description="Sign up with your email and school details"
-              icon={<UserCheck className="w-8 h-8" />}
+              title="Create School Account"
+              description="Register your school to access the portal"
+              icon={<School className="w-8 h-8" />}
             />
             <ProcessStep
               step="02"
-              title="Select Subjects"
-              description="Choose the subjects you want to register for"
-              icon={<BookOpen className="w-8 h-8" />}
+              title="Enroll Students"
+              description="Add students individually or in bulk"
+              icon={<UserPlus className="w-8 h-8" />}
             />
             <ProcessStep
               step="03"
-              title="Make Payment"
-              description="Pay securely through our online payment system"
-              icon={<FileText className="w-8 h-8" />}
+              title="Select Subjects"
+              description="Choose examination subjects for each student"
+              icon={<BookOpen className="w-8 h-8" />}
             />
             <ProcessStep
               step="04"
-              title="Get Confirmation"
-              description="Receive your exam slip and registration confirmation"
-              icon={<CheckCircle className="w-8 h-8" />}
+              title="Download Exam Slips"
+              description="Generate and print examination slips"
+              icon={<Download className="w-8 h-8" />}
             />
           </div>
         </div>
@@ -446,186 +415,6 @@ export default function ExamRegistrationLandingPage() {
           </div>
         </div>
       </section>
-
-      {/* Contact Section */}
-      <section
-        id="contact"
-        className="py-20 px-4 sm:px-6 lg:px-8 bg-background"
-      >
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Contact Us
-            </h2>
-            <p className="text-foreground/70 max-w-2xl mx-auto">
-              Have questions? Reach out to the Catholic Education Commission
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-card rounded-xl p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4">
-                <Phone className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Phone</h3>
-              <p className="text-foreground/70">+234 803 456 7890</p>
-              <p className="text-foreground/70">+234 802 123 4567</p>
-            </div>
-
-            <div className="bg-card rounded-xl p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4">
-                <Mail className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Email</h3>
-              <p className="text-foreground/70">cec.okigwe@catholic.org.ng</p>
-              <p className="text-foreground/70">exams@cecokigwe.org</p>
-            </div>
-
-            <div className="bg-card rounded-xl p-6 text-center">
-              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mx-auto mb-4">
-                <MapPin className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Address</h3>
-              <p className="text-foreground/70">
-                Catholic Education Commission
-              </p>
-              <p className="text-foreground/70">
-                Okigwe Diocese, Imo State, Nigeria
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-card to-background">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-            Ready to Register for Your Mock Exams?
-          </h2>
-          <p className="text-foreground/70 mb-10 max-w-2xl mx-auto">
-            Join thousands of students preparing for their examinations with our
-            comprehensive mock tests
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/registration">
-              <button className="bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 transition flex items-center justify-center gap-2">
-                Register Now
-                <ArrowRight className="w-5 h-5" />
-              </button>
-            </Link>
-
-            <Link href="#contact">
-              <button className="px-8 py-4 rounded-lg font-semibold border border-primary text-primary hover:bg-primary/10 transition flex items-center justify-center gap-2">
-                Contact Support
-              </button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-card py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-8">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="bg-primary p-2 rounded-lg">
-                <BookOpen className="w-5 h-5 text-white" />
-              </div>
-              <span className="font-bold text-lg">CEC Okigwe</span>
-            </div>
-            <p className="text-foreground/70 text-sm">
-              Catholic Education Commission, Okigwe Diocese, Imo State, Nigeria
-            </p>
-          </div>
-
-          <div>
-            <h3 className="font-semibold mb-4">Quick Links</h3>
-            <ul className="space-y-2 text-sm text-foreground/70">
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#registration"
-                  className="hover:text-primary transition"
-                >
-                  Registration
-                </a>
-              </li>
-              <li>
-                <a href="#subjects" className="hover:text-primary transition">
-                  Subjects
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#instructions"
-                  className="hover:text-primary transition"
-                >
-                  How to Register
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold mb-4">Resources</h3>
-            <ul className="space-y-2 text-sm text-foreground/70">
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  Exam Syllabus
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  Past Questions
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  Study Materials
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  FAQ
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold mb-4">Legal</h3>
-            <ul className="space-y-2 text-sm text-foreground/70">
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  Privacy Policy
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  Terms of Service
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  Refund Policy
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto mt-12 pt-8 border-t border-border text-center text-sm text-foreground/70">
-          <p>
-            © 2024 Catholic Education Commission, Okigwe Diocese. All rights
-            reserved.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }

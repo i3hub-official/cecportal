@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest): Promise<Response> {
   try {
     return await chainMiddlewares(request, [
       withCors,
-      withSecurityHeaders,
+      // withSecurityHeaders,
       async (req) => {
         await withRequestLogging(req);
         return NextResponse.next();
