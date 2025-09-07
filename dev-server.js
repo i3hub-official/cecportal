@@ -4,7 +4,6 @@ import next from 'next';
 import fs from 'fs';
 import os from 'os';
 import dotenv from 'dotenv';
-import qrcode from 'qrcode-terminal';
 
 // Load environment variables
 dotenv.config({ path: '.env' });
@@ -34,7 +33,6 @@ app.prepare().then(() => {
         lanIps.forEach(ip => {
             const url = `http://${ip}:${httpPort}`;
             console.log(`> 📱 Accessible via LAN: ${url}`);
-            qrcode.generate(url, { small: true });
         });
     });
 
@@ -52,7 +50,6 @@ app.prepare().then(() => {
             lanIps.forEach(ip => {
                 const url = `https://${ip}:${httpsPort}`;
                 console.log(`> 🔐 Accessible via LAN: ${url}`);
-                qrcode.generate(url, { small: true });
             });
         });
     } else {
