@@ -223,7 +223,7 @@ export default function SchoolRegistrationPage() {
                   className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
                     errors.centerNumber ? "border-red-500" : "border-border"
                   }`}
-                  placeholder="Enter your center number (e.g., CEC001)"
+                  placeholder="Enter your center number (ex. CEC000123...)"
                 />
               </div>
               {errors.centerNumber && (
