@@ -13,7 +13,7 @@ import {
 
 export default function Footer() {
   return (
-    <footer className="bg-card pt-16 pb-6 px-4 sm:px-6 lg:px-8 border-t border-border">
+    <footer className="bg-card pt-16 pb-6 px-4 sm:px-6 lg:px- border-t border-gray-200">
       <div className="max-w-7xl mx-auto">
         {/* Top section */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
@@ -132,7 +132,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom section */}
-        <div className="pt-6 border-t border-border text-center text-foreground/60 text-xs sm:text-sm">
+        <div className="pt-6 border-t border-gray-200 text-center text-foreground/60 text-xs sm:text-sm">
           <p>
             © {new Date().getFullYear()} Catholic Education Commission, Okigwe
             Diocese. Powered by{" "}

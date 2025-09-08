@@ -116,8 +116,8 @@ export default function ExamRegistrationLandingPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="relative z-10">
               <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                Mock Examination Registration
-                <span className="text-primary block">
+                Mock eRegistration
+                <span className="text-primary block text-3xl sm:text-4xl mt-2">
                   Catholic Education Commission
                 </span>
               </h1>
@@ -166,7 +166,7 @@ export default function ExamRegistrationLandingPage() {
                     <div>
                       <h3 className="font-medium">Exam Dates</h3>
                       <p className="text-sm text-foreground/70">
-                        15th - 26th April, 2024
+                        15th - 26th April, 2025
                       </p>
                     </div>
                   </div>
@@ -178,7 +178,7 @@ export default function ExamRegistrationLandingPage() {
                     <div>
                       <h3 className="font-medium">Registration Deadline</h3>
                       <p className="text-sm text-foreground/70">
-                        5th April, 2024
+                        30th April, 2025
                       </p>
                     </div>
                   </div>
@@ -189,14 +189,12 @@ export default function ExamRegistrationLandingPage() {
                     </div>
                     <div>
                       <h3 className="font-medium">For Students</h3>
-                      <p className="text-sm text-foreground/70">
-                        SS1 - SS3 Classes
-                      </p>
+                      <p className="text-sm text-foreground/70">SS2 Classes</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="mt-6 pt-6 border-t border-border">
+                <div className="mt-6 pt-6 border-t border-gray-200">
                   <Link
                     href="/school-registration"
                     className="block w-full bg-primary text-white text-center py-3 rounded-lg font-medium hover:bg-primary/90 transition"

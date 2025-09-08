@@ -45,8 +45,7 @@ export default function SchoolRegistrationPage() {
     // Additional information
     schoolType: "",
     principalName: "",
-    totalStudents: "",
-    examOfficerName: "",
+    principalPhone: "",
     examOfficerPhone: "",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -149,6 +148,8 @@ export default function SchoolRegistrationPage() {
     if (!formData.schoolType) newErrors.schoolType = "School type is required";
     if (!formData.principalName)
       newErrors.principalName = "Principal name is required";
+    if (!formData.principalPhone)
+      newErrors.principalPhone = "Principal phone is required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -257,10 +258,12 @@ export default function SchoolRegistrationPage() {
                   </h3>
                   <div className="mt-2 text-sm text-green-700">
                     <p>
+                      Center Number: <strong>{formData.centerNumber}</strong>
+                      <br />
                       Center: <strong>{formData.centerName}</strong>
                       <br />
-                      LGA: <strong>{formData.lga}</strong>, State:{" "}
-                      <strong>{formData.state}</strong>
+                      State: <strong>{formData.state}</strong>, LGA:{" "}
+                      <strong>{formData.lga}</strong>
                     </p>
                   </div>
                 </div>
@@ -319,10 +322,8 @@ export default function SchoolRegistrationPage() {
                   }`}
                 >
                   <option value="">Select school type</option>
-                  <option value="Secondary">Secondary School</option>
-                  <option value="Primary">Primary School</option>
-                  <option value="Nursery">Nursery & Primary</option>
-                  <option value="Comprehensive">Comprehensive College</option>
+                  <option value="Secondary">Senior Secondary School</option>
+                  <option value="Seminary">Seminary School</option>
                 </select>
                 {errors.schoolType && (
                   <p className="mt-1 text-sm text-red-500">
@@ -368,6 +369,8 @@ export default function SchoolRegistrationPage() {
                     name="schoolPhone"
                     value={formData.schoolPhone}
                     onChange={handleInputChange}
+                    min={11}
+                    max={11}
                     className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
                       errors.schoolPhone ? "border-red-500" : "border-border"
                     }`}
@@ -430,17 +433,23 @@ export default function SchoolRegistrationPage() {
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  Estimated Student Count
+                  Principal&apos;s Phone Number *
                 </label>
                 <input
                   type="number"
-                  name="totalStudents"
-                  value={formData.totalStudents}
+                  name="principalPhone"
+                  value={formData.principalPhone}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="e.g., 500"
-                  min="0"
+                  placeholder="+234 800 123 4567"
+                  min={11}
+                  max={11}
                 />
+                {errors.principalPhone && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.principalPhone}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -550,20 +559,6 @@ export default function SchoolRegistrationPage() {
                   </p>
                 )}
               </div>
-
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Exam Officer Name
-                </label>
-                <input
-                  type="text"
-                  name="examOfficerName"
-                  value={formData.examOfficerName}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                  placeholder="Enter exam officer's name (if different)"
-                />
-              </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -646,7 +641,7 @@ export default function SchoolRegistrationPage() {
                   className="rounded text-primary focus:ring-primary"
                 />
                 <span className="text-sm text-foreground/70">
-                  I agree to the{" "}
+                  By creating an account, you agree to our{" "}
                   <Link href="/terms" className="text-primary hover:underline">
                     Terms and Conditions
                   </Link>{" "}
@@ -657,6 +652,7 @@ export default function SchoolRegistrationPage() {
                   >
                     Privacy Policy
                   </Link>
+                  .
                 </span>
               </label>
             </div>
@@ -747,7 +743,7 @@ export default function SchoolRegistrationPage() {
                           ? "bg-green-500 text-white"
                           : i === step
                           ? "bg-primary text-white"
-                          : "bg-gray-200 text-foreground/50"
+                          : "bg-gray-200 text-primary/50"
                       }`}
                     >
                       {i < step ? <CheckCircle className="w-5 h-5" /> : i}

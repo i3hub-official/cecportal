@@ -9,6 +9,8 @@
   --accent: #f59e0b;          /* Amber */
   --card: #f9fafb;            /* Light gray for contrast */
   --border: #e5e7eb;          /* NEW: light borders */
+  --nav-height: 73px;       /* global nav */
+  --header-height: 64px;    /* your Header height */
 }
 
 /* Dark Theme Override (when .dark is applied) */

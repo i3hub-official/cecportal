@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "i3ClearID",
-  description: "Government-safe identity verification platform by I3Hub",
+  title: "CEC Portal - eRegistration",
+  description: "Catholic Education Commission Portal by I3Hub",
 };
 
 export default function RootLayout({
