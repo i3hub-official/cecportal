@@ -14,6 +14,8 @@ import {
   Search,
   User,
 } from "lucide-react";
+import StatCard from "../(component)/component/StatCard";
+import RecentActivity from "../(component)/component/RecentActivity";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -71,10 +73,6 @@ const Dashboard = () => {
     { id: "transaction", label: "Transaction", icon: CreditCard },
   ];
 
-  const headerItems = [
-    { id: "school-profile", label: "School Profile", icon: School },
-  ];
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -92,7 +90,7 @@ const Dashboard = () => {
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out
       ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-      lg:translate-x-0 bg-card/80 backdrop-blur-md border-r border-border lg:bg-card lg:backdrop-blur-0`}
+      lg:translate-x-0 bg-card/80 backdrop-blur-md border-border lg:bg-card lg:backdrop-blur-0`}
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
@@ -127,13 +125,16 @@ const Dashboard = () => {
             })}
           </nav>
 
-          {/* Sidebar Footer */}
+          {/* Sidebar Footer - Clickable Admin User */}
           <div className="p-4 border-border">
-            <div className="flex items-center space-x-3 p-3 rounded-lg bg-background/20">
+            <button
+              onClick={() => handleMenuClick("school-profile")}
+              className="w-full flex items-center space-x-3 p-3 rounded-lg bg-background/80 backdrop-blur-sm lg:bg-background hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200"
+            >
               <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary">
                 <User size={16} className="text-white" />
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="flex-1 min-w-0 text-left">
                 <p className="text-sm font-medium truncate text-foreground">
                   Admin User
                 </p>
@@ -141,7 +142,7 @@ const Dashboard = () => {
                   admin@school.edu
                 </p>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </aside>
@@ -149,13 +150,13 @@ const Dashboard = () => {
       {/* Overlay for mobile sidebar with blur effect */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-transparent bg-opacity-80 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-40 bg-black bg-opacity-50 backdrop-blur-sm lg:hidden"
           onClick={toggleSidebar}
         />
       )}
 
-      {/* Main Content Area - Removed fixed positioning to allow scrolling */}
-      <div className="flex-1 flex flex-col lg:ml-64 sticky top-0 left-0 right-0 bottom-0 lg:relative">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col lg:ml-64">
         {/* Fixed Header */}
         <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-16 px-6 shadow-sm bg-card border-border lg:left-64 transition-all duration-300">
           {/* Left */}
@@ -170,27 +171,6 @@ const Dashboard = () => {
               {activeMenu}
             </h1>
           </div>
-
-          {/* Center nav (desktop) */}
-          <nav className="hidden md:flex items-center space-x-6">
-            {headerItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => handleMenuClick(item.id)}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors duration-200 ${
-                    activeMenu === item.id
-                      ? "text-white shadow-md bg-primary"
-                      : "hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground"
-                  }`}
-                >
-                  <Icon size={18} />
-                  <span className="font-medium">{item.label}</span>
-                </button>
-              );
-            })}
-          </nav>
 
           {/* Right actions */}
           <div className="flex items-center space-x-3">
@@ -231,76 +211,10 @@ const Dashboard = () => {
                   </div>
 
                   {/* Stats Cards */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    {[
-                      {
-                        title: "Total Students",
-                        value: "1,234",
-                        change: "+5%",
-                        color: "primary",
-                      },
-                      {
-                        title: "Active Assessments",
-                        value: "23",
-                        change: "+12%",
-                        color: "secondary",
-                      },
-                      {
-                        title: "Pending Transactions",
-                        value: "45",
-                        change: "-3%",
-                        color: "accent",
-                      },
-                      {
-                        title: "School Rating",
-                        value: "4.8",
-                        change: "+0.2",
-                        color: "primary",
-                      },
-                    ].map((stat, index) => (
-                      <div
-                        key={index}
-                        className="p-6 rounded-xl shadow-sm bg-card border border-border"
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <h3 className="text-sm font-medium text-foreground opacity-70">
-                            {stat.title}
-                          </h3>
-                          <span
-                            className={`text-xs px-2 py-1 rounded-full bg-${stat.color}/20 text-${stat.color}`}
-                          >
-                            {stat.change}
-                          </span>
-                        </div>
-                        <p className="text-3xl font-bold text-foreground">
-                          {stat.value}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
+                  <StatCard />
 
                   {/* Recent Activity */}
-                  <div className="rounded-xl p-6 shadow-sm bg-card border border-border">
-                    <h3 className="text-lg font-semibold mb-4 text-foreground">
-                      Recent Activity
-                    </h3>
-                    <div className="space-y-4">
-                      {[
-                        "New student registration completed",
-                        "Assessment results published for Math 101",
-                        "Payment received from John Doe",
-                        "School profile updated",
-                      ].map((activity, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
-                        >
-                          <div className="w-2 h-2 rounded-full bg-primary" />
-                          <p className="text-foreground">{activity}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <RecentActivity />
                 </div>
               )}
 
