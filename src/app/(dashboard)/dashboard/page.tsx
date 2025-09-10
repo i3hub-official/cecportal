@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import {
   Menu,
   X,
-  Home,
   Users,
   ClipboardCheck,
   CreditCard,
@@ -16,15 +15,6 @@ import {
   ChevronDown,
   ChevronRight,
   FileText,
-  CheckSquare,
-  Calendar,
-  Shield,
-  BookOpen,
-  Download,
-  Send,
-  Settings,
-  Printer,
-  BarChart3,
 } from "lucide-react";
 import { sidebarItems } from "../(component)/context/SidebarItems";
 import StatCard from "../(component)/component/StatCard";
