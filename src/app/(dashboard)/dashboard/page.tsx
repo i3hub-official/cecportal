@@ -17,7 +17,10 @@ import {
 import StatCard from "../(component)/component/StatCard";
 import RecentActivity from "../(component)/component/RecentActivity";
 import QuickLinks from "../(component)/component/QuickLinks";
+import QuickLinksX from "../(component)/component/QuickLinksX";
 import DeadlineNotice from "../(component)/component/DeadlineNotice";
+import TrendInsights from "../(component)/component/TrendsInsights";
+import UpcomingEvents from "../(component)/component/UpcomingEvents";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -242,11 +245,20 @@ const Dashboard = () => {
                   {/* Stats Cards */}
                   <StatCard />
 
+                  {/* Trending Insights */}
+                  <TrendInsights />
+
                   {/* Recent Activity */}
                   <RecentActivity />
 
                   {/* Quick Links */}
                   <QuickLinks />
+
+                  {/* Additional Quick Links */}
+                  <QuickLinksX />
+
+                  {/* Upcoming Events */}
+                  <UpcomingEvents />
                 </div>
               )}
 

@@ -1,7 +1,7 @@
 export default function StatCard() {
   // Define your totals here
-  const total: number = 80;
-  const registered = 46; // Must be <= total
+  const total: number = 457;
+  const registered = 410; // Must be <= total
   const pending = total - registered; // Auto-calculated
   const approved = Math.min(registered, 35); // Approved cannot exceed registered
 
@@ -19,10 +19,30 @@ export default function StatCard() {
   };
 
   const data = [
-    { title: "Total Candidates", value: total, change: "100%", color: "primary" as const },
-    { title: "Registered", value: registered, change: calcPercent(registered), color: "secondary" as const },
-    { title: "Pending", value: pending, change: calcPercent(pending), color: "accent" as const },
-    { title: "Approved", value: approved, change: calcPercent(approved), color: "primary" as const },
+    {
+      title: "Total Candidates",
+      value: total,
+      change: "100%",
+      color: "primary" as const,
+    },
+    {
+      title: "Registered",
+      value: registered,
+      change: calcPercent(registered),
+      color: "secondary" as const,
+    },
+    {
+      title: "Pending",
+      value: pending,
+      change: calcPercent(pending),
+      color: "accent" as const,
+    },
+    {
+      title: "Approved",
+      value: approved,
+      change: calcPercent(approved),
+      color: "primary" as const,
+    },
   ];
 
   return (
