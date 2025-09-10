@@ -1,28 +1,16 @@
 "use client";
 import {
-  Menu,
-  X,
   Home,
   Users,
   ClipboardCheck,
   CreditCard,
-  School,
-  Sun,
-  Moon,
-  Bell,
-  Search,
   User,
-  ChevronDown,
-  ChevronRight,
   FileText,
   CheckSquare,
   Calendar,
   Shield,
-  BookOpen,
-  Download,
   Send,
   Settings,
-  Printer,
   BarChart3,
 } from "lucide-react";
 
