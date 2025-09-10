@@ -13,7 +13,20 @@ import {
   Bell,
   Search,
   User,
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  CheckSquare,
+  Calendar,
+  Shield,
+  BookOpen,
+  Download,
+  Send,
+  Settings,
+  Printer,
+  BarChart3,
 } from "lucide-react";
+import { sidebarItems } from "../(component)/context/SidebarItems";
 import StatCard from "../(component)/component/StatCard";
 import RecentActivity from "../(component)/component/RecentActivity";
 import QuickLinks from "../(component)/component/QuickLinks";
@@ -25,6 +38,7 @@ import UpcomingEvents from "../(component)/component/UpcomingEvents";
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("dashboard");
+  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -76,6 +90,14 @@ const Dashboard = () => {
     setSidebarOpen(false); // Close sidebar on mobile after clicking an item
   };
 
+  const toggleSubmenu = (menuId: string) => {
+    if (expandedMenus.includes(menuId)) {
+      setExpandedMenus(expandedMenus.filter((id) => id !== menuId));
+    } else {
+      setExpandedMenus([...expandedMenus, menuId]);
+    }
+  };
+
   const toggleTheme = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
@@ -90,13 +112,6 @@ const Dashboard = () => {
     // Save preference to localStorage
     localStorage.setItem("theme", newDarkMode ? "dark" : "light");
   };
-
-  const sidebarItems = [
-    { id: "dashboard", label: "Dashboard", icon: Home },
-    { id: "candidates", label: "Candidates", icon: Users },
-    { id: "assessment", label: "Assessment", icon: ClipboardCheck },
-    { id: "transaction", label: "Transaction", icon: CreditCard },
-  ];
 
   if (loading) {
     return (
@@ -115,7 +130,7 @@ const Dashboard = () => {
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out
       ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-      lg:translate-x-0 bg-card/80 backdrop-blur-md border-border lg:bg-card lg:backdrop-blur-0`}
+      lg:translate-x-0 bg-card/80 backdrop-blur-md border-border lg:bg-card lg:backdrop-blur-0 overflow-y-auto`}
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
@@ -130,22 +145,63 @@ const Dashboard = () => {
           </div>
 
           {/* Sidebar Navigation */}
-          <nav className="flex-1 px-4 py-6 space-y-2">
+          <nav className="flex-1 px-2 py-4 space-y-1">
             {sidebarItems.map((item) => {
               const Icon = item.icon;
+              const isExpanded = expandedMenus.includes(item.id);
+
               return (
-                <button
-                  key={item.id}
-                  onClick={() => handleMenuClick(item.id)}
-                  className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition-colors duration-200 ${
-                    activeMenu === item.id
-                      ? "text-white shadow-md bg-primary"
-                      : "hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground"
-                  }`}
-                >
-                  <Icon size={20} />
-                  <span className="font-medium">{item.label}</span>
-                </button>
+                <div key={item.id}>
+                  <button
+                    onClick={() =>
+                      item.hasSubmenu
+                        ? toggleSubmenu(item.id)
+                        : handleMenuClick(item.id)
+                    }
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-colors duration-200 ${
+                      activeMenu === item.id
+                        ? "text-white shadow-md bg-primary"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground"
+                    }`}
+                  >
+                    <div className="flex items-center space-x-3">
+                      <Icon size={20} />
+                      <span className="font-medium">{item.label}</span>
+                    </div>
+                    {item.hasSubmenu && (
+                      <div>
+                        {isExpanded ? (
+                          <ChevronDown size={16} />
+                        ) : (
+                          <ChevronRight size={16} />
+                        )}
+                      </div>
+                    )}
+                  </button>
+
+                  {/* Submenu items */}
+                  {item.hasSubmenu && isExpanded && (
+                    <div className="ml-6 mt-1 space-y-1">
+                      {item.submenu?.map((subItem) => {
+                        const SubIcon = subItem.icon;
+                        return (
+                          <button
+                            key={subItem.id}
+                            onClick={() => handleMenuClick(subItem.id)}
+                            className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors duration-200 ${
+                              activeMenu === subItem.id
+                                ? "text-primary font-medium bg-primary/10"
+                                : "text-foreground/70 hover:text-foreground hover:bg-gray-100 dark:hover:bg-gray-700"
+                            }`}
+                          >
+                            <SubIcon size={16} />
+                            <span className="text-sm">{subItem.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               );
             })}
           </nav>
@@ -193,7 +249,10 @@ const Dashboard = () => {
               <Menu size={20} />
             </button>
             <h1 className="text-xl font-semibold capitalize text-foreground">
-              {activeMenu}
+              {activeMenu
+                .split("-")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ")}
             </h1>
           </div>
 
@@ -220,7 +279,7 @@ const Dashboard = () => {
         </header>
 
         {/* Scrollable Page Content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto pt-16">
           <div className="p-6 bg-background transition-colors duration-300">
             <div className="max-w-7xl mx-auto">
               {/* Content based on active menu */}
@@ -262,24 +321,50 @@ const Dashboard = () => {
                 </div>
               )}
 
-              {activeMenu === "candidates" && (
+              {/* Candidate Submenu Pages */}
+              {(activeMenu === "candidates" ||
+                activeMenu === "new-candidate" ||
+                activeMenu === "modify-candidate" ||
+                activeMenu === "view-candidate" ||
+                activeMenu === "candidate-reports") && (
                 <div>
                   <h2 className="text-2xl font-bold mb-6 text-foreground">
-                    Student Candidates
+                    {activeMenu
+                      .split("-")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")}
                   </h2>
                   <div className="rounded-xl p-8 text-center shadow-sm bg-card border border-border">
                     <Users size={48} className="mx-auto mb-4 text-primary" />
                     <p className="text-foreground">
-                      Candidate management interface coming soon...
+                      {activeMenu
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}{" "}
+                      interface coming soon...
                     </p>
                   </div>
                 </div>
               )}
 
-              {activeMenu === "assessment" && (
+              {/* Assessment Submenu Pages */}
+              {(activeMenu === "assessment" ||
+                activeMenu === "compute-assessment" ||
+                activeMenu === "modify-assessment" ||
+                activeMenu === "view-assessments" ||
+                activeMenu === "assessment-reports") && (
                 <div>
                   <h2 className="text-2xl font-bold mb-6 text-foreground">
-                    Assessment Center
+                    {activeMenu
+                      .split("-")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")}
                   </h2>
                   <div className="rounded-xl p-8 text-center shadow-sm bg-card border border-border">
                     <ClipboardCheck
@@ -287,16 +372,32 @@ const Dashboard = () => {
                       className="mx-auto mb-4 text-secondary"
                     />
                     <p className="text-foreground">
-                      Assessment tools and analytics coming soon...
+                      {activeMenu
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}{" "}
+                      tools coming soon...
                     </p>
                   </div>
                 </div>
               )}
 
-              {activeMenu === "transaction" && (
+              {/* Transaction Submenu Pages */}
+              {(activeMenu === "transaction" ||
+                activeMenu === "make-payment" ||
+                activeMenu === "view-transaction" ||
+                activeMenu === "verify-invoice" ||
+                activeMenu === "log-dispute") && (
                 <div>
                   <h2 className="text-2xl font-bold mb-6 text-foreground">
-                    Transaction Management
+                    {activeMenu
+                      .split("-")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")}
                   </h2>
                   <div className="rounded-xl p-8 text-center shadow-sm bg-card border border-border">
                     <CreditCard
@@ -304,7 +405,72 @@ const Dashboard = () => {
                       className="mx-auto mb-4 text-accent"
                     />
                     <p className="text-foreground">
-                      Payment and transaction tracking coming soon...
+                      {activeMenu
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}{" "}
+                      functionality coming soon...
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Reports Submenu Pages */}
+              {(activeMenu === "reports" ||
+                activeMenu === "photo-card" ||
+                activeMenu === "registration-report" ||
+                activeMenu === "performance-report" ||
+                activeMenu === "financial-report") && (
+                <div>
+                  <h2 className="text-2xl font-bold mb-6 text-foreground">
+                    {activeMenu
+                      .split("-")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")}
+                  </h2>
+                  <div className="rounded-xl p-8 text-center shadow-sm bg-card border border-border">
+                    <FileText size={48} className="mx-auto mb-4 text-primary" />
+                    <p className="text-foreground">
+                      {activeMenu
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}{" "}
+                      generation coming soon...
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Validation Submenu Pages */}
+              {(activeMenu === "validation" ||
+                activeMenu === "entry-schedule" ||
+                activeMenu === "data-validation" ||
+                activeMenu === "document-verification") && (
+                <div>
+                  <h2 className="text-2xl font-bold mb-6 text-foreground">
+                    {activeMenu
+                      .split("-")
+                      .map(
+                        (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                      )
+                      .join(" ")}
+                  </h2>
+                  <div className="rounded-xl p-8 text-center shadow-sm bg-card border border-border">
+                    <Shield size={48} className="mx-auto mb-4 text-primary" />
+                    <p className="text-foreground">
+                      {activeMenu
+                        .split("-")
+                        .map(
+                          (word) => word.charAt(0).toUpperCase() + word.slice(1)
+                        )
+                        .join(" ")}{" "}
+                      tools coming soon...
                     </p>
                   </div>
                 </div>
