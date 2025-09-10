@@ -35,10 +35,6 @@ export default function NotFound() {
           Back to Home Page
         </Link>
       </div>
-      {/* Footer */}
-      <p className="absolute text-sm text-center text-foreground/60 -translate-x-1/2 bottom-6 left-1/2">
-        &copy; {new Date().getFullYear()} - EduDash
-      </p>
     </div>
   );
 }

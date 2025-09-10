@@ -63,7 +63,8 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       { protocol: "https", hostname: "res.cloudinary.com", pathname: "/**" },
       { protocol: "https", hostname: "ui-avatars.com", pathname: "/**" },
-    ],
+      { protocol: "https", hostname: "i.pravatar.cc", pathname: "/**" },
+          ],
     disableStaticImages: false,
     minimumCacheTTL: 60,
   },

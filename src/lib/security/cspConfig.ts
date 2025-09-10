@@ -60,6 +60,8 @@ export const cspConfig = {
     "https://ui-avatars.com",
     "https://res.cloudinary.com",
     "https://*.cloudinary.com/",
+    "https://*.pravatar.cc",
+    "https://i.pravatar.cc",
     "https://localhost",
     "http://localhost",
     "https://127.0.0.1",

@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import StatCard from "../(component)/component/StatCard";
 import RecentActivity from "../(component)/component/RecentActivity";
+import QuickLinks from "../(component)/component/QuickLinks";
+import DeadlineNotice from "../(component)/component/DeadlineNotice";
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -24,18 +26,35 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if dark mode is preferred by the user's system
+    // Check for saved theme preference in localStorage
     if (typeof window !== "undefined") {
-      const isDarkMode = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setDarkMode(isDarkMode);
+      const savedTheme = localStorage.getItem("theme");
 
-      // Apply the dark class to the document element
-      if (isDarkMode) {
-        document.documentElement.classList.add("dark");
+      if (savedTheme) {
+        // Use saved theme preference
+        const isDarkMode = savedTheme === "dark";
+        setDarkMode(isDarkMode);
+
+        if (isDarkMode) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
       } else {
-        document.documentElement.classList.remove("dark");
+        // If no saved preference, check system preference
+        const systemPrefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        setDarkMode(systemPrefersDark);
+
+        if (systemPrefersDark) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+
+        // Save system preference to localStorage
+        localStorage.setItem("theme", systemPrefersDark ? "dark" : "light");
       }
     }
 
@@ -64,6 +83,9 @@ const Dashboard = () => {
     } else {
       document.documentElement.classList.remove("dark");
     }
+
+    // Save preference to localStorage
+    localStorage.setItem("theme", newDarkMode ? "dark" : "light");
   };
 
   const sidebarItems = [
@@ -210,11 +232,21 @@ const Dashboard = () => {
                     </p>
                   </div>
 
+                  {/* Deadline Notice */}
+                  <DeadlineNotice
+                    deadline="2025-11-30"
+                    className="my-4"
+                    variant="detailed"
+                  />
+
                   {/* Stats Cards */}
                   <StatCard />
 
                   {/* Recent Activity */}
                   <RecentActivity />
+
+                  {/* Quick Links */}
+                  <QuickLinks />
                 </div>
               )}
 
