@@ -101,3 +101,108 @@ pre {
   max-height: 0;
   opacity: 0;
 }
+
+
+/* Dashboard Loader Effect and Animation   */
+@keyframes loadingWave {
+  0%, 100% {
+    transform: translateX(0) scaleX(1);
+  }
+  50% {
+    transform: translateX(30%) scaleX(1.2);
+  }
+}
+
+@keyframes ripple-1 {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple-2 {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple-3 {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes ripple-4 {
+  0% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@keyframes underline {
+  0% {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  50% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  51% {
+    transform-origin: right;
+  }
+  100% {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+}
+
+.animate-ripple-1 {
+  animation: ripple-1 4s ease-out infinite;
+}
+
+.animate-ripple-2 {
+  animation: ripple-2 5s ease-out infinite;
+  animation-delay: 1s;
+}
+
+.animate-ripple-3 {
+  animation: ripple-3 6s ease-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-ripple-4 {
+  animation: ripple-4 7s ease-out infinite;
+  animation-delay: 3s;
+}
+
+.animate-ping-slow {
+  animation: ping 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-ping-slower {
+  animation: ping 4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  animation-delay: 0.5s;
+}
+
+.animate-underline {
+  animation: underline 2s ease-in-out infinite;
+}

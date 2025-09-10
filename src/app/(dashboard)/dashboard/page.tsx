@@ -17,6 +17,7 @@ import {
   FileText,
   Shield,
 } from "lucide-react";
+import LoadingScreen from "../(component)/context/LoadingScreen";
 import { sidebarItems } from "../(component)/context/SidebarItems";
 import StatCard from "../(component)/component/StatCard";
 import RecentActivity from "../(component)/component/RecentActivity";
@@ -32,6 +33,7 @@ const Dashboard = () => {
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   useEffect(() => {
     // Check for saved theme preference in localStorage
@@ -66,12 +68,27 @@ const Dashboard = () => {
       }
     }
 
-    // Simulate loading
+    // Generate random time between 1-10 seconds (1000-10000ms)
+    const randomLoadingTime = Math.floor(Math.random() * 9000) + 1000;
+
+    // Update progress every 100ms
+    const progressInterval = setInterval(() => {
+      setLoadingProgress((prev) => {
+        const increment = 100 / (randomLoadingTime / 100);
+        return Math.min(prev + increment, 100);
+      });
+    }, 100);
+
+    // Simulate loading with random time
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 1000);
+      clearInterval(progressInterval);
+    }, randomLoadingTime);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(progressInterval);
+    };
   }, []);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -108,14 +125,7 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-foreground">Loading...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen message="Preparing Your Workspace" />;
   }
 
   return (
