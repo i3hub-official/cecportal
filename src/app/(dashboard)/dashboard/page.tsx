@@ -78,14 +78,17 @@ const Dashboard = () => {
 
   const handleMenuClick = (menuId: string) => {
     setActiveMenu(menuId);
+    setExpandedMenus([]); // This will close all dropdowns
     setSidebarOpen(false); // Close sidebar on mobile after clicking an item
   };
 
   const toggleSubmenu = (menuId: string) => {
-    if (expandedMenus.includes(menuId)) {
-      setExpandedMenus(expandedMenus.filter((id) => id !== menuId));
+    // If we're opening a menu, close all others first
+    if (!expandedMenus.includes(menuId)) {
+      setExpandedMenus([menuId]);
     } else {
-      setExpandedMenus([...expandedMenus, menuId]);
+      // If we're closing the menu, just remove it
+      setExpandedMenus(expandedMenus.filter((id) => id !== menuId));
     }
   };
 
@@ -144,11 +147,13 @@ const Dashboard = () => {
               return (
                 <div key={item.id}>
                   <button
-                    onClick={() =>
-                      item.hasSubmenu
-                        ? toggleSubmenu(item.id)
-                        : handleMenuClick(item.id)
-                    }
+                    onClick={() => {
+                      if (item.hasSubmenu) {
+                        toggleSubmenu(item.id);
+                      } else {
+                        handleMenuClick(item.id);
+                      }
+                    }}
                     className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-colors duration-200 ${
                       activeMenu === item.id
                         ? "text-white shadow-md bg-primary"
