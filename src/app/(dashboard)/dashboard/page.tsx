@@ -15,6 +15,7 @@ import {
   ChevronDown,
   ChevronRight,
   FileText,
+  Shield,
 } from "lucide-react";
 import { sidebarItems } from "../(component)/context/SidebarItems";
 import StatCard from "../(component)/component/StatCard";
