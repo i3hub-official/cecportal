@@ -177,9 +177,18 @@ export const devCspConfig = {
 // Stricter config for production
 export const prodCspConfig = {
   ...cspConfig,
-  scriptSrc: cspConfig.scriptSrc.filter(
-    (src) => src !== "'unsafe-inline'" && src !== "'unsafe-eval'"
-  ),
+  scriptSrc: [
+    ...cspConfig.scriptSrc,
+    "'unsafe-inline'", // required for hydration unless you add nonces
+    "'unsafe-eval'", // required by Next.js dev/runtime
+    "https://vercel.live",
+    "https://*.vercel.app",
+  ],
+  connectSrc: [
+    ...cspConfig.connectSrc,
+    "https://vercel.live",
+    "wss://vercel.live",
+  ],
 };
 
 // Pick config by environment
