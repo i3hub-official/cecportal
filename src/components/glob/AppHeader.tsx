@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, User, Moon, Sun } from "lucide-react";
+import { Menu, X, User, Moon, Sun, LogInIcon } from "lucide-react";
 
-export default function Navbar() {
+export default function AppHeader() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark" | null>(null);
   const [mounted, setMounted] = useState(false);
@@ -105,17 +105,24 @@ export default function Navbar() {
             )}
           </div>
         </div>
-
         {/* --- Mobile dropdown --- */}
         {isMobileMenuOpen && (
-          <div className="md:hidden bg-card border-t border-border">
-            <div className="px-2 pt-2 pb-4 space-y-2">
+          <div className="md:hidden bg-card border-t border-bordermt-4 flex flex-col divide-y divide-gray-200 sm:hidden border border-card rounded-md shadow-sm p-4 space-y-4">
+            <div className="flex gap-2">
               <Link
-                href="/login"
-                className="flex items-center justify-center bg-transparent hover:bg-primary/10 text-foreground font-medium py-3 px-4 rounded-md transition"
+                href="/registration"
+                className="flex-1 flex items-center justify-center bg-transparent hover:bg-primary/10 text-foreground font-medium py-2 px-3 rounded-md transition"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <User className="w-5 h-5 mr-2" /> Login
+                <User className="w-4 h-4 mr-2" /> Register
+              </Link>
+
+              <Link
+                href="/login"
+                className="flex-1 flex items-center justify-center bg-transparent hover:bg-primary/10 text-foreground font-medium py-2 px-3 rounded-md transition"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <LogInIcon className="w-4 h-4 mr-2" /> Login
               </Link>
             </div>
           </div>

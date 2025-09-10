@@ -8,9 +8,9 @@ import dotenv from 'dotenv';
 // Load environment variables
 dotenv.config({ path: '.env' });
 
-const dev = process.env.NODE_ENV !== 'development';
-const httpPort = 3000;
-const httpsPort = 3001;
+const dev = process.env.NODE_ENV !== 'production';
+const httpPort = 3001;
+const httpsPort = 3002;
 const certPath = process.env.SSL_CERTIFICATE;
 const keyPath = process.env.SSL_KEY;
 

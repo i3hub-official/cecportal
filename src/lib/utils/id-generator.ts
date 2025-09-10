@@ -1,10 +1,10 @@
 // /lib/utils/id-generator.ts
 
 /**
- * Generate a new Centre Number.
+ * Generate a new Center Number.
  * Format: CEC + 7-digit padded number (e.g., CEC0000123)
  */
-export function generateCentreNumber(lastCentreId: number): string {
+export function generateCenterNumber(lastCentreId: number): string {
   return "CEC" + String(lastCentreId + 1).padStart(7, "0");
 }
 

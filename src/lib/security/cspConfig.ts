@@ -1,7 +1,7 @@
 // src/lib/security/cspConfig.ts
 
 export const cspConfig = {
-  // Default source for all directives - ADD blob: HERE
+  // Default source for everything
   defaultSrc: [
     "'self'",
     "blob:",
@@ -15,7 +15,7 @@ export const cspConfig = {
     "http://192.168.0.159",
   ],
 
-  // JavaScript sources - ADD blob: HERE
+  // JavaScript sources
   scriptSrc: [
     "'self'",
     "'report-sample'",
@@ -28,31 +28,29 @@ export const cspConfig = {
     "http://127.0.0.1",
     "https://192.168.0.159",
     "http://192.168.0.159",
-    "'unsafe-inline'", // Allow inline scripts in development
-    "'unsafe-eval'", // Allow eval in development
-    "https://apis.google.com", // If using Google APIs
-    "https://www.googletagmanager.com", // If using Google Tag Manager
+    "'unsafe-inline'", // Needed for Tailwind in dev
+    "'unsafe-eval'", // Needed for Next.js in dev
+    "https://apis.google.com",
+    "https://www.googletagmanager.com",
   ],
 
-  // Stylesheets - ADD blob: HERE
+  // Stylesheets
   styleSrc: [
     "'self'",
-    "'unsafe-inline'", // Allow inline styles
+    "'unsafe-inline'", // Tailwind requires this
     "blob:",
-    "https://fonts.googleapis.com", // Google Fonts
+    "https://fonts.googleapis.com",
     "https://cecportal.vercel.app",
     "https://apinigeria.vercel.app",
     "https://localhost",
     "http://localhost",
     "https://127.0.0.1",
     "http://127.0.0.1",
-    "https://192.168.0.0/16",
-    "http://192.168.0.0/16",
     "https://192.168.0.159",
     "http://192.168.0.159",
   ],
 
-  // Images - blob: is already here (good!)
+  // Images
   imgSrc: [
     "'self'",
     "data:",
@@ -68,16 +66,16 @@ export const cspConfig = {
     "http://127.0.0.1",
     "https://192.168.0.159",
     "http://192.168.0.159",
-    "https://www.google-analytics.com", // Google Analytics
-    "https://stats.g.doubleclick.net", // Google Analytics
+    "https://www.google-analytics.com",
+    "https://stats.g.doubleclick.net",
   ],
 
-  // Fonts - ADD blob: HERE
+  // Fonts
   fontSrc: [
     "'self'",
     "data:",
     "blob:",
-    "https://fonts.gstatic.com", // Google Fonts
+    "https://fonts.gstatic.com",
     "https://cecportal.vercel.app",
     "https://apinigeria.vercel.app",
     "https://localhost",
@@ -88,7 +86,7 @@ export const cspConfig = {
     "http://192.168.0.159",
   ],
 
-  // Connections - ADD blob: HERE
+  // Connections
   connectSrc: [
     "'self'",
     "blob:",
@@ -100,16 +98,16 @@ export const cspConfig = {
     "http://127.0.0.1",
     "https://192.168.0.159",
     "http://192.168.0.159",
-    "ws://localhost:*", // WebSockets for dev server
+    "ws://localhost:*",
     "ws://127.0.0.1:*",
     "ws://192.168.0.159:*",
     "wss://localhost:*",
     "wss://127.0.0.1:*",
     "wss://192.168.0.159:*",
-    "https://www.google-analytics.com", // Google Analytics
-    "https://stats.g.doubleclick.net", // Google Analytics
+    "https://www.google-analytics.com",
+    "https://stats.g.doubleclick.net",
 
-    // 🌐 External IP APIs
+    // External IP APIs
     "https://api.ipify.org",
     "https://api.my-ip.io",
     "https://ipecho.net",
@@ -117,7 +115,7 @@ export const cspConfig = {
     "https://icanhazip.com",
   ],
 
-  // Media - blob: is already here (good!)
+  // Media
   mediaSrc: [
     "'self'",
     "blob:",
@@ -132,7 +130,7 @@ export const cspConfig = {
     "http://192.168.0.159",
   ],
 
-  // Frames - ADD blob: HERE
+  // Frames
   frameSrc: [
     "'self'",
     "blob:",
@@ -146,8 +144,8 @@ export const cspConfig = {
     "http://192.168.0.159",
   ],
 
-  // Objects (flash, etc.)
-  objectSrc: ["'none'"], // No object tags allowed
+  // Objects
+  objectSrc: ["'none'"],
 
   // Base URI
   baseUri: ["'self'"],
@@ -159,32 +157,30 @@ export const cspConfig = {
     "https://apinigeria.vercel.app",
   ],
 
-  // Additional security headers
-  frameAncestors: ["'none'"], // Prevent clickjacking
-  upgradeInsecureRequests: true, // Upgrade HTTP to HTTPS
-  blockAllMixedContent: true, // Block mixed content
+  // Security directives (✅ empty arrays instead of booleans)
+  frameAncestors: ["'none'"],
+  upgradeInsecureRequests: [],
+  blockAllMixedContent: [],
 
-  // Report violations (optional)
+  // Reporting
   reportUri: ["/api/csp-violation-report"],
 };
 
-// Optional: Environment-specific configurations
+// Looser config for development
 export const devCspConfig = {
   ...cspConfig,
-  // More permissive in development
+  scriptSrc: [...cspConfig.scriptSrc, "'unsafe-inline'", "'unsafe-eval'"],
 };
 
+// Stricter config for production
 export const prodCspConfig = {
   ...cspConfig,
-  // More restrictive in production
   scriptSrc: cspConfig.scriptSrc.filter(
     (src) => src !== "'unsafe-inline'" && src !== "'unsafe-eval'"
   ),
 };
 
+// Pick config by environment
 export const getCspConfig = () => {
-  if (process.env.NODE_ENV === "production") {
-    return prodCspConfig;
-  }
-  return devCspConfig;
+  return process.env.NODE_ENV === "production" ? prodCspConfig : devCspConfig;
 };
