@@ -183,11 +183,13 @@ export const prodCspConfig = {
     "'unsafe-eval'", // required by Next.js dev/runtime
     "https://vercel.live",
     "https://*.vercel.app",
+    "https://cecportal.vercel.app",
   ],
   connectSrc: [
     ...cspConfig.connectSrc,
     "https://vercel.live",
     "wss://vercel.live",
+    "https://cecportal.vercel.app",
   ],
 };
 
