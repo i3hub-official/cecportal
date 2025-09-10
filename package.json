@@ -12,6 +12,7 @@
   "dependencies": {
     "@prisma/client": "^6.15.0",
     "@prisma/extension-accelerate": "^2.0.2",
+    "@react-email/components": "^0.5.3",
     "cloudinary": "^2.7.0",
     "framer-motion": "^12.23.12",
     "lucide-react": "^0.542.0",
