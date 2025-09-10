@@ -19,6 +19,7 @@ const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("dashboard");
   const [darkMode, setDarkMode] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if dark mode is preferred by the user's system
@@ -35,9 +36,22 @@ const Dashboard = () => {
         document.documentElement.classList.remove("dark");
       }
     }
+
+    // Simulate loading
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
+  const handleMenuClick = (menuId: string) => {
+    setActiveMenu(menuId);
+    setSidebarOpen(false); // Close sidebar on mobile after clicking an item
+  };
+
   const toggleTheme = () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
@@ -61,17 +75,28 @@ const Dashboard = () => {
     { id: "school-profile", label: "School Profile", icon: School },
   ];
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Sidebar */}
+      {/* Sidebar with transparent background and blur */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out
       ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-      lg:translate-x-0 bg-card border-r border-border`}
+      lg:translate-x-0 bg-card/80 backdrop-blur-md border-r border-border lg:bg-card lg:backdrop-blur-0`}
       >
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
-          <div className="flex items-center justify-between h-16 px-6 border-b border-border">
+          <div className="flex items-center justify-between h-16 px-6 border-border">
             <h2 className="text-xl font-bold text-primary">EduDash</h2>
             <button
               onClick={toggleSidebar}
@@ -88,7 +113,7 @@ const Dashboard = () => {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveMenu(item.id)}
+                  onClick={() => handleMenuClick(item.id)}
                   className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg text-left transition-colors duration-200 ${
                     activeMenu === item.id
                       ? "text-white shadow-md bg-primary"
@@ -103,8 +128,8 @@ const Dashboard = () => {
           </nav>
 
           {/* Sidebar Footer */}
-          <div className="p-4 border-t border-border">
-            <div className="flex items-center space-x-3 p-3 rounded-lg bg-background">
+          <div className="p-4 border-border">
+            <div className="flex items-center space-x-3 p-3 rounded-lg bg-background/20">
               <div className="w-8 h-8 rounded-full flex items-center justify-center bg-primary">
                 <User size={16} className="text-white" />
               </div>
@@ -121,18 +146,18 @@ const Dashboard = () => {
         </div>
       </aside>
 
-      {/* Overlay for mobile sidebar */}
+      {/* Overlay for mobile sidebar with blur effect */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+          className="fixed inset-0 z-40 bg-transparent bg-opacity-80 backdrop-blur-sm lg:hidden"
           onClick={toggleSidebar}
         />
       )}
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col lg:ml-64">
+      {/* Main Content Area - Removed fixed positioning to allow scrolling */}
+      <div className="flex-1 flex flex-col lg:ml-64 sticky top-0 left-0 right-0 bottom-0 lg:relative">
         {/* Fixed Header */}
-        <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-16 px-6 shadow-sm bg-card border-b border-border lg:left-64">
+        <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between h-16 px-6 shadow-sm bg-card border-border lg:left-64 transition-all duration-300">
           {/* Left */}
           <div className="flex items-center space-x-4">
             <button
@@ -153,7 +178,7 @@ const Dashboard = () => {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveMenu(item.id)}
+                  onClick={() => handleMenuClick(item.id)}
                   className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors duration-200 ${
                     activeMenu === item.id
                       ? "text-white shadow-md bg-primary"
@@ -189,8 +214,8 @@ const Dashboard = () => {
           </div>
         </header>
 
-        {/* Scrollable Page Content - Adjusted for fixed header */}
-        <main className="flex-1 overflow-auto pt-16">
+        {/* Scrollable Page Content */}
+        <main className="flex-1 overflow-auto">
           <div className="p-6 bg-background transition-colors duration-300">
             <div className="max-w-7xl mx-auto">
               {/* Content based on active menu */}
