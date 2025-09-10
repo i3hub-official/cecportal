@@ -17,6 +17,7 @@ import {
   FileCheck,
   BookText,
 } from "lucide-react";
+import AppHeader from "@/components/glob/AppHeader";
 
 export default function ExamRegistrationLandingPage() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
@@ -109,13 +110,16 @@ export default function ExamRegistrationLandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden pt-16">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      {/* AppHeader */}
+      <AppHeader />
+
       {/* Hero Section */}
       <section className="relative pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-card to-background overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="relative z-10">
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              <h1 className="text-4xl md:text-5xl font-bold mt-10 mb-6 leading-tight">
                 Mock eRegistration
                 <span className="text-primary block text-3xl sm:text-4xl mt-2">
                   Catholic Education Commission
@@ -127,7 +131,7 @@ export default function ExamRegistrationLandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
-                  href="/registration"
+                  href="/login"
                   className="bg-primary text-white px-8 py-4 rounded-lg font-semibold hover:bg-primary/90 transition flex items-center justify-center gap-2"
                 >
                   Begin Registration
@@ -196,7 +200,7 @@ export default function ExamRegistrationLandingPage() {
 
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <Link
-                    href="/school-registration"
+                    href="/registration"
                     className="block w-full bg-primary text-white text-center py-3 rounded-lg font-medium hover:bg-primary/90 transition"
                   >
                     Create School Account

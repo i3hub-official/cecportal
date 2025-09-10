@@ -43,20 +43,8 @@ export default function AppHeader() {
     >
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="relative flex items-center justify-between h-16 w-full">
-          {/* --- Mobile left: theme + hamburger --- */}
+          {/* --- Mobile left: only hamburger --- */}
           <div className="flex items-center md:hidden space-x-2">
-            {mounted && (
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-full bg-card text-foreground border border-background hover:bg-background transition-colors"
-              >
-                {theme === "dark" ? (
-                  <Sun className="w-5 h-5" />
-                ) : (
-                  <Moon className="w-5 h-5" />
-                )}
-              </button>
-            )}
             <button
               className="text-foreground p-2"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -69,7 +57,7 @@ export default function AppHeader() {
             </button>
           </div>
 
-          {/* --- Brand name --- */}
+          {/* --- Brand name (with theme button on mobile) --- */}
           <Link
             href="/"
             className="absolute left-1/2 -translate-x-1/2 md:static md:translate-x-0 flex items-center"
@@ -81,6 +69,20 @@ export default function AppHeader() {
               CEC eRegistration
             </span>
           </Link>
+
+          {/* Theme button on mobile, right of brand */}
+          {mounted && (
+            <button
+              onClick={toggleTheme}
+              className="ml-2 p-2 rounded-full bg-card text-foreground border border-background hover:bg-background transition-colors md:hidden"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </button>
+          )}
 
           {/* --- Desktop right: login + theme --- */}
           <div className="hidden md:flex items-center space-x-4">
