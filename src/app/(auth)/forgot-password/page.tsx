@@ -11,7 +11,7 @@ import {
   CheckCircle,
   RefreshCw,
 } from "lucide-react";
-import VerificationInput from "@/app/forgot-password/components/VerificationInput";
+import VerificationInput from "./components/VerificationInput";
 
 export default function ForgotPasswordPage() {
   const [step, setStep] = useState(1);
@@ -517,19 +517,19 @@ export default function ForgotPasswordPage() {
             {step === 1
               ? "Reset Password"
               : step === 2
-              ? "Verify Token"
-              : step === 3
-              ? "Create New Password"
-              : "Password Reset"}
+                ? "Verify Token"
+                : step === 3
+                  ? "Create New Password"
+                  : "Password Reset"}
           </h2>
           <p className="mt-2 text-sm text-center text-foreground/70">
             {step === 1
               ? "Enter your school email to receive a verification token"
               : step === 2
-              ? "Enter the 6-digit token sent to your email"
-              : step === 3
-              ? "Create a strong new password for your account"
-              : "Your password has been successfully reset"}
+                ? "Enter the 6-digit token sent to your email"
+                : step === 3
+                  ? "Create a strong new password for your account"
+                  : "Your password has been successfully reset"}
           </p>
         </div>
 
