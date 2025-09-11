@@ -738,7 +738,7 @@ export default function SchoolRegistrationPage() {
                 {[1, 2, 3, 4].map((i) => (
                   <React.Fragment key={i}>
                     <div
-                      className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                      className={`flex items-center justify-center w-8 h-8 rounded-full ${api
                         i < step
                           ? "bg-green-500 text-white"
                           : i === step

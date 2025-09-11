@@ -49,7 +49,7 @@ body {
 html, body, #--next {
   height: auto;
   min-height: 100vh;
-  scroll-behavior: smooth;
+  data-scroll-behavior:"smooth";
   font-size: 100%;
   line-height: 1.5;
 }
