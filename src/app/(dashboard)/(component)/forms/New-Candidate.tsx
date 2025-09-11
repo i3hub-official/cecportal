@@ -804,67 +804,58 @@ export default function CandidateRegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-4 pb-10 px-4 sm:pt-20">
-      <div className="max-w-4xl mx-auto">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center text-primary hover:underline mb-6"
-        >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          Return to the Dashboard
-        </Link>
+    <main className="flex-1 overflow-auto pt-16">
+      <div className="p-4 bg-background transition-colors duration-300">
+        <div className="max-w-7xl mx-auto">
+          {/* Ultra-compact layout */}
+          <div className="bg-card rounded-lg shadow-md overflow-hidden">
+            {/* Header with minimal padding */}
+            <div className="p-3 border-b border-border">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-xl font-bold text-foreground">
+                    Exam Registration
+                  </h1>
+                  <p className="text-foreground/60 text-xs">
+                    CEC Mock Examinations
+                  </p>
+                </div>
 
-        <div className="bg-card rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-border">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Examination Registration
-            </h1>
-            <p className="text-foreground/70">
-              Register for the Catholic Education Commission Mock Examinations
-            </p>
-
-            {/* Progress indicator */}
-            <div className="mt-6">
-              <div className="flex items-center">
-                {[1, 2, 3].map((i) => (
-                  <React.Fragment key={i}>
-                    <div
-                      className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                        i < step
-                          ? "bg-green-500 text-white"
-                          : i === step
-                            ? "bg-primary text-white"
-                            : "bg-gray-200 text-primary/50"
-                      }`}
-                    >
-                      {i < step ? <CheckCircle className="w-5 h-5" /> : i}
-                    </div>
-                    {i < 3 && (
+                {/* Progress indicator */}
+                <div className="flex items-center space-x-1">
+                  {[1, 2, 3].map((i) => (
+                    <React.Fragment key={i}>
                       <div
-                        className={`flex-1 h-1 mx-2 ${
-                          i < step ? "bg-green-500" : "bg-gray-200"
+                        className={`flex items-center justify-center w-5 h-5 rounded-full text-xs ${
+                          i < step
+                            ? "bg-green-500 text-white"
+                            : i === step
+                              ? "bg-primary text-white"
+                              : "bg-gray-200 text-primary/50"
                         }`}
-                      ></div>
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-              <div className="flex justify-between mt-2 text-xs text-foreground/60">
-                <span>Personal Info</span>
-                <span>Subjects</span>
-                <span>Complete</span>
+                      >
+                        {i < step ? <CheckCircle className="w-3 h-3" /> : i}
+                      </div>
+                      {i < 3 && (
+                        <div
+                          className={`w-2 h-0.5 ${
+                            i < step ? "bg-green-500" : "bg-gray-200"
+                          }`}
+                        ></div>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
               </div>
             </div>
+
+            {/* Form body with minimal padding */}
+            <form onSubmit={handleSubmit}>
+              <div className="p-3">{renderStep()}</div>
+            </form>
           </div>
-
-          <form onSubmit={handleSubmit} className="p-6">
-            {renderStep()}
-          </form>
         </div>
-
-        {/* Examination Resources */}
-        <ExaminationResources />
       </div>
-    </div>
+    </main>
   );
 }
