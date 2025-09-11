@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { UserPlus } from "lucide-react";
 
 export default function RecentActivity() {
   // Sample registration data matching the CEC Okigwe theme
@@ -67,10 +68,21 @@ export default function RecentActivity() {
 
   return (
     <div className="rounded-xl p-6 shadow-sm bg-card ">
-      <h3 className="text-lg font-semibold mb-4 text-foreground">
-        Recent Registrations
-      </h3>
-      <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <div className="p-2 bg-primary/10 rounded-lg">
+          <UserPlus className="w-5 h-5 text-primary" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-foreground">
+            Recent Registration
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            Latest candidates added to the system
+          </p>
+        </div>
+      </div>
+
+      <div className="space-y-4 mt-6 max-h-96 overflow-y-auto pr-2">
         {registrations.map((registration) => (
           <div
             key={registration.id}

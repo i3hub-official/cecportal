@@ -1,4 +1,12 @@
-import { Printer, Send, Settings } from "lucide-react";
+import {
+  Link2,
+  Link2OffIcon,
+  LucideLink2,
+  ToolCase,
+  Printer,
+  Send,
+  Settings,
+} from "lucide-react";
 
 export default function QuickLinks() {
   const handleCardClick = (action: string, reportType?: string) => {
@@ -13,12 +21,20 @@ export default function QuickLinks() {
     "flex flex-row items-center p-4 rounded-xl backdrop-blur-md bg-white/40 dark:bg-gray-800/30 shadow-sm transition-all duration-300 cursor-pointer group h-20 md:h-24";
 
   return (
-    <div className="space-y-6 mt-8">
+    <div className="space-y-6 mt-8 mb-8">
       {/* Additional Actions */}
       <div className="bg-card rounded-xl p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-foreground mb-6">
-          Additional Actions
-        </h3>
+        <div className="flex items-center gap-2 mb-5">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <ToolCase className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">
+              Additional Actions
+            </h3>
+            <p className="text-sm text-muted-foreground">Other common tasks</p>
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Send Reminders */}
           <button

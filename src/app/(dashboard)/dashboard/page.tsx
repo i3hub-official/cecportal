@@ -139,7 +139,7 @@ const Dashboard = () => {
         <div className="flex flex-col h-full">
           {/* Sidebar Header */}
           <div className="flex items-center justify-between h-16 px-6 border-border">
-            <h2 className="text-xl font-bold text-primary">EduDash</h2>
+            <h2 className="text-xl font-bold text-primary">CEC ePortal</h2>
             <button
               onClick={toggleSidebar}
               className="lg:hidden p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700"

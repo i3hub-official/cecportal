@@ -3,9 +3,7 @@ import {
   FileText,
   BarChart3,
   Download,
-  Printer,
-  Send,
-  Settings,
+  Link2Icon,
 } from "lucide-react";
 
 export default function QuickLinks() {
@@ -19,17 +17,24 @@ export default function QuickLinks() {
   const cardBase =
     "flex flex-col items-center justify-center p-4 rounded-2xl backdrop-blur-md bg-white/40 dark:bg-gray-800/30 shadow-sm transition-all duration-300 cursor-pointer group";
 
-  // Base for wide (rectangular) action cards
-  const wideCardBase =
-    "flex flex-row items-center p-4 rounded-xl backdrop-blur-md bg-white/40 dark:bg-gray-800/30 shadow-sm transition-all duration-300 cursor-pointer group h-20 md:h-24";
-
   return (
     <div className="space-y-6 mt-8">
       {/* Quick Links */}
       <div className="bg-card rounded-xl p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-foreground mb-6">
-          Quick Links
-        </h3>
+        <div className="flex items-center gap-2 mb-5">
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <Link2Icon className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold text-foreground">
+              Quick Links
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              Access important tools and actions
+            </p>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Quick Links cards (unchanged) */}
           <button
