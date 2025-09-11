@@ -9,7 +9,6 @@ import MainContent from "@/app/(dashboard)/(component)/layout/MainContent";
 import LoadingScreen from "@/app/(dashboard)/(component)/context/LoadingScreen";
 
 const Dashboard = () => {
-  const { darkMode, toggleTheme } = useTheme();
   const { loading, setLoading } = useLoading();
   const { sidebarOpen, toggleSidebar } = useNavigation();
 

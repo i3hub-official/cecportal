@@ -152,7 +152,7 @@ export default function ExamRegistrationLandingPage() {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="bg-primary/10 w-full h-64 rounded-lg blur-3xl"></div>
               </div>
-              <div className="relative bg-background rounded-2xl p-8 shadow-lg">
+              <div className="relative bg-background rounded-2xl p-8 shadow-lg mt-10">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-semibold">Exam Registration</h2>
                   <div className="flex gap-2">
