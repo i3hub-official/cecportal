@@ -125,7 +125,7 @@ const Dashboard = () => {
   };
 
   if (loading) {
-    return <LoadingScreen message="Preparing Your Workspace" />;
+    return <LoadingScreen />;
   }
 
   return (
