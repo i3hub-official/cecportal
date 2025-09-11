@@ -14,7 +14,7 @@ import {
   BarChart3,
 } from "lucide-react";
 
-export const sidebarItems = [
+export const SidebarItems = [
   {
     id: "dashboard",
     label: "Dashboard",

@@ -5,7 +5,7 @@ interface LoadingScreenProps {
 }
 
 export default function LoadingScreen({
-  message = "We are getting you set up...",
+  message = "Setting Up Your Dashboard",
 }: LoadingScreenProps) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
@@ -33,6 +33,21 @@ export default function LoadingScreen({
         <p className="text-xs text-muted-foreground">
           Securely connected to your institution
         </p>
+
+        {/* Inline styles for animations */}
+        <style jsx>{`
+          @keyframes loadingBar {
+            0% {
+              transform: translateX(-100%);
+            }
+            50% {
+              transform: translateX(0%);
+            }
+            100% {
+              transform: translateX(100%);
+            }
+          }
+        `}</style>
       </div>
     </div>
   );

@@ -69,8 +69,7 @@ export default function DeadlineNotice({
           </span>
         </div>
       </div>
-    );
-  }
+    );  }
 
   return (
     <div
