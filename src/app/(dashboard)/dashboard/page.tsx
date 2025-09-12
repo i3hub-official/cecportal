@@ -14,7 +14,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     // Generate random time between 1-5 seconds (1000-5000ms)
-    const randomLoadingTime = Math.floor(Math.random() * 4000) + 1000;
+    const randomLoadingTime = Math.floor(Math.random() * 1000) + 1000;
 
     const timer = setTimeout(() => {
       setLoading(false);

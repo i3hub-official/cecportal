@@ -1,3 +1,4 @@
+// SidebarContext.tsx
 "use client";
 import React from "react";
 import { ChevronDown, ChevronRight } from "lucide-react";
@@ -18,27 +19,48 @@ interface SidebarContextProps {
 }
 
 const SidebarContext: React.FC<SidebarContextProps> = ({ item }) => {
-  const { activeMenu, expandedMenus, setActiveMenu, toggleSubmenu } =
-    useNavigation();
+  const {
+    activeMenu,
+    activeParent,
+    setActiveMenu,
+    setActiveParent,
+    forceMenuUpdate,
+  } = useNavigation();
+
   const Icon = item.icon;
-  const isExpanded = expandedMenus.includes(item.id);
+  const isExpanded = activeParent === item.id;
 
   // Check if any submenu item is active
-  const isAnySubmenuActive = item.submenu?.some(subItem => subItem.id === activeMenu);
-  
-  // Check if this parent item is active (either directly or through a submenu)
+  const isAnySubmenuActive = item.submenu?.some(
+    (subItem) => subItem.id === activeMenu
+  );
+
+  // Parent is active if itself or any child is active
   const isParentActive = activeMenu === item.id || isAnySubmenuActive;
+
+  const handleParentClick = () => {
+    forceMenuUpdate(); // ✅ Force update on every click
+
+    if (item.hasSubmenu) {
+      // Toggle the parent expansion
+      setActiveParent(isExpanded ? null : item.id);
+    } else {
+      setActiveMenu(item.id);
+      setActiveParent(null); // close any open submenu
+    }
+  };
+
+  const handleSubmenuClick = (subItemId: string) => {
+    forceMenuUpdate(); // ✅ Force update on every click
+    setActiveMenu(subItemId);
+    // Don't close the parent when selecting a child
+  };
 
   return (
     <div>
+      {/* Parent button */}
       <button
-        onClick={() => {
-          if (item.hasSubmenu) {
-            toggleSubmenu(item.id);
-          } else {
-            setActiveMenu(item.id);
-          }
-        }}
+        onClick={handleParentClick}
         className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-left transition-colors duration-200 ${
           isParentActive
             ? "text-white shadow-md bg-primary"
@@ -66,11 +88,11 @@ const SidebarContext: React.FC<SidebarContextProps> = ({ item }) => {
           {item.submenu?.map((subItem) => {
             const SubIcon = subItem.icon;
             const isSubmenuActive = activeMenu === subItem.id;
-            
+
             return (
               <button
                 key={subItem.id}
-                onClick={() => setActiveMenu(subItem.id)}
+                onClick={() => handleSubmenuClick(subItem.id)}
                 className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left transition-colors duration-200 ${
                   isSubmenuActive
                     ? "text-white font-medium bg-primary"

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -10,21 +11,39 @@ import {
   Phone,
   CheckCircle,
   Upload,
-  BookOpen,
   Loader,
   User2Icon,
   CreditCard,
   LocationEdit,
+  Edit,
 } from "lucide-react";
-import { allSubjects } from "@/app/(auth)/enrol/(component)/data/Subjects";
-import { ExaminationResources } from "@/app/(auth)/enrol/(component)/components/ExaminationResouces";
 
 // Cache for LGAs to avoid repeated API calls
 const lgaCache = new Map<string, string[]>();
 
+// Define types for our form data
+interface FormData {
+  // Personal Information
+  surname: string;
+  firstName: string;
+  otherName: string;
+  dateOfBirth: string;
+  gender: string;
+  state: string;
+  lga: string;
+  nin: string;
+  phoneNumber: string;
+  disability: string;
+  passport: File | null;
+
+  // Terms acceptance
+  acceptedTerms: boolean;
+}
+
 export default function CandidateRegistrationPage() {
+  const router = useRouter();
   const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     // Personal Information
     surname: "",
     firstName: "",
@@ -36,10 +55,10 @@ export default function CandidateRegistrationPage() {
     nin: "",
     phoneNumber: "",
     disability: "",
-    passport: null as File | null,
+    passport: null,
 
-    // Subject Selection
-    subjects: [] as string[],
+    // Terms acceptance
+    acceptedTerms: false,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -51,39 +70,56 @@ export default function CandidateRegistrationPage() {
   const [isLoadingLgas, setIsLoadingLgas] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
-  // Load saved form data on component mount
+  // Check cache validity on mount
   useEffect(() => {
-    const savedFormData = sessionStorage.getItem("candidateFormData");
-    if (savedFormData) {
-      setFormData(JSON.parse(savedFormData));
+    const checkCacheValidity = () => {
+      const cachedTimestamp = localStorage.getItem("cachedTimestamp");
+      if (cachedTimestamp) {
+        const cacheTime = parseInt(cachedTimestamp);
+        const currentTime = Date.now();
+        const tenMinutes = 10 * 60 * 1000; // 10 minutes in milliseconds
+
+        // If cache is older than 10 minutes, clear it
+        if (currentTime - cacheTime > tenMinutes) {
+          localStorage.removeItem("cachedStates");
+          localStorage.removeItem("cachedFormData");
+          localStorage.removeItem("cachedPassportPreview");
+          localStorage.removeItem("cachedTimestamp");
+        }
+      }
+    };
+
+    checkCacheValidity();
+
+    // Load saved form data if it exists and is still valid
+    const cachedFormData = localStorage.getItem("cachedFormData");
+    if (cachedFormData) {
+      setFormData(JSON.parse(cachedFormData));
     }
 
-    const savedPassportPreview = sessionStorage.getItem("passportPreview");
-    if (savedPassportPreview) {
-      setPassportPreview(savedPassportPreview);
+    const cachedPassportPreview = localStorage.getItem("cachedPassportPreview");
+    if (cachedPassportPreview) {
+      setPassportPreview(cachedPassportPreview);
     }
   }, []);
 
-  // Save form data to session storage on changes
+  // Save form data to local storage with timestamp
   useEffect(() => {
-    sessionStorage.setItem("candidateFormData", JSON.stringify(formData));
+    const saveDataWithTimestamp = () => {
+      localStorage.setItem("cachedFormData", JSON.stringify(formData));
+      localStorage.setItem("cachedTimestamp", Date.now().toString());
+    };
+
+    saveDataWithTimestamp();
   }, [formData]);
 
-  // Save passport preview to session storage
+  // Save passport preview to local storage
   useEffect(() => {
     if (passportPreview) {
-      sessionStorage.setItem("passportPreview", passportPreview);
+      localStorage.setItem("cachedPassportPreview", passportPreview);
+      localStorage.setItem("cachedTimestamp", Date.now().toString());
     }
   }, [passportPreview]);
-
-  //   Set subjects
-  useEffect(() => {
-    // Ensure all subjects are always preselected
-    setFormData((prev) => ({
-      ...prev,
-      subjects: allSubjects,
-    }));
-  }, []);
 
   // Fetch states data on component mount
   useEffect(() => {
@@ -91,7 +127,7 @@ export default function CandidateRegistrationPage() {
       setIsLoadingStates(true);
       setApiError(null);
       try {
-        const cached = sessionStorage.getItem("cachedStates");
+        const cached = localStorage.getItem("cachedStates");
         if (cached) {
           setStates(JSON.parse(cached));
           return;
@@ -105,7 +141,8 @@ export default function CandidateRegistrationPage() {
         const data = await res.json();
         const statesList = data.states || [];
         setStates(statesList);
-        sessionStorage.setItem("cachedStates", JSON.stringify(statesList));
+        localStorage.setItem("cachedStates", JSON.stringify(statesList));
+        localStorage.setItem("cachedTimestamp", Date.now().toString());
       } catch (error) {
         console.error("Failed to load states");
         setApiError("Failed to load states data. Please try again later.");
@@ -163,11 +200,13 @@ export default function CandidateRegistrationPage() {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target as HTMLInputElement;
+    const checked =
+      type === "checkbox" ? (e.target as HTMLInputElement).checked : undefined;
 
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: type === "checkbox" ? checked : value,
     }));
 
     // Clear error when user starts typing
@@ -189,12 +228,18 @@ export default function CandidateRegistrationPage() {
     if (file) {
       // Check file type and size
       if (!file.type.startsWith("image/")) {
-        setErrors({ passport: "Please upload an image file" });
+        setErrors((prev) => ({
+          ...prev,
+          passport: "Please upload an image file",
+        }));
         return;
       }
       if (file.size > 2 * 1024 * 1024) {
         // 2MB limit
-        setErrors({ passport: "File size must be less than 2MB" });
+        setErrors((prev) => ({
+          ...prev,
+          passport: "File size must be less than 2MB",
+        }));
         return;
       }
 
@@ -208,35 +253,29 @@ export default function CandidateRegistrationPage() {
       reader.onload = (e) => {
         const result = e.target?.result as string;
         setPassportPreview(result);
-        sessionStorage.setItem("passportPreview", result);
+        localStorage.setItem("cachedPassportPreview", result);
+        localStorage.setItem("cachedTimestamp", Date.now().toString());
       };
       reader.readAsDataURL(file);
 
+      // Clear any existing error
       setErrors((prev) => ({ ...prev, passport: "" }));
     }
-  };
-
-  const handleSubjectToggle = (subject: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      subjects: prev.subjects.includes(subject)
-        ? prev.subjects.filter((s) => s !== subject)
-        : [...prev.subjects, subject],
-    }));
   };
 
   const validateStep1 = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.surname) newErrors.surname = "Surname is required";
-    if (!formData.firstName) newErrors.firstName = "First name is required";
+    if (!formData.surname.trim()) newErrors.surname = "Surname is required";
+    if (!formData.firstName.trim())
+      newErrors.firstName = "First name is required";
     if (!formData.dateOfBirth)
       newErrors.dateOfBirth = "Date of birth is required";
     if (!formData.gender) newErrors.gender = "Gender is required";
     if (!formData.state) newErrors.state = "State is required";
     if (!formData.lga) newErrors.lga = "LGA is required";
-    if (!formData.nin) newErrors.nin = "NIN is required";
-    if (!formData.phoneNumber)
+    if (!formData.nin.trim()) newErrors.nin = "NIN is required";
+    if (!formData.phoneNumber.trim())
       newErrors.phoneNumber = "Phone number is required";
     if (!formData.passport)
       newErrors.passport = "Passport photograph is required";
@@ -244,14 +283,31 @@ export default function CandidateRegistrationPage() {
     // Validate phone number format
     if (
       formData.phoneNumber &&
-      !/^(\+234|0)[789][01]\d{8}$/.test(formData.phoneNumber)
+      !/^(\+234|0)[789][01]\d{8}$/.test(formData.phoneNumber.replace(/\s/g, ""))
     ) {
       newErrors.phoneNumber = "Please enter a valid Nigerian phone number";
     }
 
     // Validate NIN format (basic validation)
-    if (formData.nin && formData.nin.length !== 11) {
-      newErrors.nin = "NIN must be 11 digits";
+    if (formData.nin && !/^\d{11}$/.test(formData.nin.replace(/\s/g, ""))) {
+      newErrors.nin = "NIN must be exactly 11 digits";
+    }
+
+    // Validate age (must be at least 16 years old)
+    if (formData.dateOfBirth) {
+      const birthDate = new Date(formData.dateOfBirth);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        age--;
+      }
+      if (age < 16) {
+        newErrors.dateOfBirth = "You must be at least 16 years old to register";
+      }
     }
 
     setErrors(newErrors);
@@ -261,12 +317,37 @@ export default function CandidateRegistrationPage() {
   const validateStep2 = () => {
     const newErrors: Record<string, string> = {};
 
-    if (formData.subjects.length < 5) {
-      newErrors.subjects = "Select at least 5 subjects";
+    if (!formData.acceptedTerms) {
+      newErrors.acceptedTerms = "You must accept the terms and conditions";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const resetForm = () => {
+    setFormData({
+      surname: "",
+      firstName: "",
+      otherName: "",
+      dateOfBirth: "",
+      gender: "",
+      state: "",
+      lga: "",
+      nin: "",
+      phoneNumber: "",
+      disability: "",
+      passport: null,
+      acceptedTerms: false,
+    });
+    setPassportPreview(null);
+    setErrors({});
+    setStep(1);
+
+    // Clear localStorage
+    localStorage.removeItem("cachedFormData");
+    localStorage.removeItem("cachedPassportPreview");
+    localStorage.removeItem("cachedTimestamp");
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -275,12 +356,13 @@ export default function CandidateRegistrationPage() {
     if (validateStep2()) {
       setIsSubmitting(true);
 
-      // Clear form data from session storage on successful submission
+      // Simulate submission delay
       setTimeout(() => {
         setIsSubmitting(false);
-        setStep(3); // Success step
-        sessionStorage.removeItem("candidateFormData");
-        sessionStorage.removeItem("passportPreview");
+        setStep(4); // Success step
+        localStorage.removeItem("cachedFormData");
+        localStorage.removeItem("cachedPassportPreview");
+        localStorage.removeItem("cachedTimestamp");
       }, 2000);
     }
   };
@@ -292,7 +374,7 @@ export default function CandidateRegistrationPage() {
       case 1:
         return (
           <div className="space-y-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start">
                 <div className="flex-shrink-0">
                   <User className="h-5 w-5 text-blue-400" />
@@ -411,7 +493,7 @@ export default function CandidateRegistrationPage() {
                     className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
                       errors.dateOfBirth ? "border-red-500" : "border-border"
                     }`}
-                    placeholder="09/11/2025"
+                    max={new Date().toISOString().split("T")[0]}
                   />
                 </div>
                 {errors.dateOfBirth && (
@@ -635,12 +717,13 @@ export default function CandidateRegistrationPage() {
             </div>
 
             <button
+              type="button"
               onClick={() => {
                 if (validateStep1()) setStep(2);
               }}
               className="w-full bg-primary text-white py-4 px-6 rounded-lg font-medium hover:bg-primary/90 transition flex items-center justify-center"
             >
-              Continue to Subject Selection
+              Continue to Review
             </button>
           </div>
         );
@@ -649,42 +732,129 @@ export default function CandidateRegistrationPage() {
         return (
           <div className="space-y-6">
             {/* Info Section */}
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start">
                 <div className="flex-shrink-0">
-                  <BookOpen className="h-5 w-5 text-green-400" />
+                  <CheckCircle className="h-5 w-5 text-blue-400" />
                 </div>
                 <div className="ml-3">
-                  <h3 className="text-sm font-medium text-green-800">
-                    Subject Selection
+                  <h3 className="text-sm font-medium text-blue-800">
+                    Review Your Information
                   </h3>
-                  <div className="mt-2 text-sm text-green-700">
+                  <div className="mt-2 text-sm text-blue-700">
                     <p>
-                      All subjects have been pre-selected for your examination.
-                      Review the list below.
+                      Please review your information carefully before proceeding
+                      to terms and conditions.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Error */}
-            {errors.subjects && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                <p className="text-sm text-red-700">{errors.subjects}</p>
-              </div>
-            )}
-
-            {/* Subject List - Readonly */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-[26rem] overflow-y-auto">
-              {allSubjects.map((subject) => (
-                <div
-                  key={subject}
-                  className="w-full p-3 sm:p-4 border rounded-lg text-xs sm:text-sm font-medium bg-primary/10 border-primary text-primary cursor-not-allowed"
+            {/* Data Preview Card */}
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Registration Preview
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="flex items-center gap-2 text-primary hover:text-primary/80 text-sm"
                 >
-                  {subject}
+                  <Edit className="w-4 h-4" />
+                  Edit
+                </button>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Personal Information */}
+                <div className="space-y-3">
+                  <h4 className="font-medium text-foreground border-b pb-2">
+                    Personal Information
+                  </h4>
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">Full Name:</span>
+                      <span className="font-medium">
+                        {`${formData.surname} ${formData.firstName} ${formData.otherName || ""}`.trim()}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">Date of Birth:</span>
+                      <span className="font-medium">
+                        {formData.dateOfBirth}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">Gender:</span>
+                      <span className="font-medium">{formData.gender}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">Phone Number:</span>
+                      <span className="font-medium">
+                        {formData.phoneNumber}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">NIN:</span>
+                      <span className="font-medium">{formData.nin}</span>
+                    </div>
+
+                    {formData.disability && (
+                      <div className="flex justify-between">
+                        <span className="text-foreground/70">Disability:</span>
+                        <span className="font-medium">
+                          {formData.disability}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ))}
+
+                {/* Location & Photo */}
+                <div className="space-y-3">
+                  <h4 className="font-medium text-foreground border-b pb-2">
+                    Location & Photo
+                  </h4>
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">State:</span>
+                      <span className="font-medium">{formData.state}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">LGA:</span>
+                      <span className="font-medium">{formData.lga}</span>
+                    </div>
+
+                    <div className="mt-4">
+                      <span className="text-foreground/70 block mb-2">
+                        Passport Photo:
+                      </span>
+                      {passportPreview ? (
+                        <Image
+                          src={passportPreview}
+                          alt="Passport photo"
+                          width={80}
+                          height={80}
+                          className="w-20 h-20 rounded-lg object-cover border"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <User className="w-8 h-8 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Navigation */}
@@ -694,7 +864,117 @@ export default function CandidateRegistrationPage() {
                 onClick={() => setStep(1)}
                 className="w-full sm:w-auto px-6 py-3 border border-primary text-primary rounded-lg font-medium hover:bg-primary/10 transition"
               >
-                Back
+                Back to Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep(3)}
+                className="w-full sm:w-auto px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition"
+              >
+                Continue to Terms
+              </button>
+            </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            {/* Info Section */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <CheckCircle className="h-5 w-5 text-green-400" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-green-800">
+                    Terms and Conditions
+                  </h3>
+                  <div className="mt-2 text-sm text-green-700">
+                    <p>
+                      Please review and accept the terms and conditions to
+                      complete your registration.
+                    </p>
+                    <br />
+                    <p>Scroll down to review the full terms and conditions.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Error */}
+            {errors.acceptedTerms && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-700">{errors.acceptedTerms}</p>
+              </div>
+            )}
+
+            {/* Terms and Conditions Content */}
+            <div className="bg-card rounded-lg p-6 max-h-96 overflow-y-auto">
+              <h3 className="text-lg font-semibold mb-4">
+                Terms and Conditions
+              </h3>
+
+              <p className="mb-4">
+                By submitting this form, you agree to the following terms and
+                conditions:
+              </p>
+
+              <ol className="list-decimal pl-5 space-y-3">
+                <li>
+                  All information provided is accurate and complete to the best
+                  of my knowledge.
+                </li>
+                <li>
+                  I understand that providing false information may lead to
+                  disqualification.
+                </li>
+                <li>
+                  I consent to the collection and processing of my personal data
+                  for examination purposes.
+                </li>
+                <li>
+                  I agree to abide by all examination rules and regulations.
+                </li>
+                <li>
+                  I understand that fees paid are non-refundable once the
+                  registration is processed.
+                </li>
+                <li>
+                  I acknowledge that examination dates and venues are subject to
+                  change and will be communicated in advance.
+                </li>
+                <li>
+                  I agree to receive communications related to my examination
+                  registration.
+                </li>
+              </ol>
+
+              <div className="mt-6">
+                <label className="flex items-start">
+                  <input
+                    type="checkbox"
+                    name="acceptedTerms"
+                    checked={formData.acceptedTerms}
+                    onChange={handleInputChange}
+                    className="mt-1 mr-2"
+                  />
+                  <span className="text-sm">
+                    I have read and agree to the terms and conditions outlined
+                    above.
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            {/* Navigation */}
+            <div className="flex flex-col sm:flex-row justify-between gap-3 mt-8">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="w-full sm:w-auto px-6 py-3 border border-primary text-primary rounded-lg font-medium hover:bg-primary/10 transition"
+              >
+                Back to Review
               </button>
               <button
                 type="submit"
@@ -714,7 +994,7 @@ export default function CandidateRegistrationPage() {
           </div>
         );
 
-      case 3:
+      case 4:
         return (
           <div className="text-center py-8">
             {/* Success Icon */}
@@ -743,13 +1023,9 @@ export default function CandidateRegistrationPage() {
                     className="w-24 h-24 rounded-full object-cover border"
                   />
                 ) : (
-                  <Image
-                    src="/default-avatar.png"
-                    alt="Default Avatar"
-                    width={96}
-                    height={96}
-                    className="w-24 h-24 rounded-full object-cover border"
-                  />
+                  <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center border">
+                    <User className="w-12 h-12 text-gray-400" />
+                  </div>
                 )}
               </div>
 
@@ -773,27 +1049,26 @@ export default function CandidateRegistrationPage() {
                     CEC-{Math.random().toString(36).substr(2, 9).toUpperCase()}
                   </strong>
                 </p>
-                <p>
-                  <span className="font-semibold">Seat Number:</span>{" "}
-                  {Math.floor(1000 + Math.random() * 9000)}
-                </p>
               </div>
             </div>
 
             {/* Actions */}
             <div className="space-y-4 max-w-xs mx-auto mt-8">
               <button
-                onClick={() => window.print()}
-                className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition"
-              >
-                Print Registration Slip
-              </button>
-              <Link
-                href="/enrol"
-                className="block w-full border border-primary text-primary py-3 rounded-lg font-medium hover:bg-primary/10 transition"
+                type="button"
+                onClick={resetForm}
+                className="block w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition"
               >
                 Register Another Candidate
-              </Link>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => router.push("/dashboard")}
+                className="block w-full border border-primary text-primary py-3 rounded-lg font-medium hover:bg-primary/10 transition"
+              >
+                Go to Dashboard
+              </button>
             </div>
           </div>
         );
@@ -804,67 +1079,75 @@ export default function CandidateRegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-4 pb-10 px-4 sm:pt-20">
-      <div className="max-w-4xl mx-auto">
-        <Link
-          href="/dashboard"
-          className="inline-flex items-center text-primary hover:underline mb-6"
-        >
-          <ArrowLeft className="w-5 h-5 mr-2" />
-          Return to the Dashboard
-        </Link>
+    <main className="flex-1 overflow-auto">
+      <div className="p-4 bg-background transition-colors duration-300">
+        <div className="max-w-7xl mx-auto">
+          {/* Back link and title section */}
+          <div className="mb-6">
+            <button
+              type="button"
+              onClick={() => router.push("/dashboard")}
+              className="inline-flex items-center gap-2 text-primary hover:underline mb-4 text-sm"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </button>
 
-        <div className="bg-card rounded-xl shadow-lg overflow-hidden">
-          <div className="p-6 border-b border-border">
-            <h1 className="text-3xl font-bold text-foreground mb-2">
-              Examination Registration
-            </h1>
-            <p className="text-foreground/70">
-              Register for the Catholic Education Commission Mock Examinations
-            </p>
-
-            {/* Progress indicator */}
-            <div className="mt-6">
-              <div className="flex items-center">
-                {[1, 2, 3].map((i) => (
-                  <React.Fragment key={i}>
-                    <div
-                      className={`flex items-center justify-center w-8 h-8 rounded-full ${
-                        i < step
-                          ? "bg-green-500 text-white"
-                          : i === step
-                            ? "bg-primary text-white"
-                            : "bg-gray-200 text-primary/50"
-                      }`}
-                    >
-                      {i < step ? <CheckCircle className="w-5 h-5" /> : i}
-                    </div>
-                    {i < 3 && (
-                      <div
-                        className={`flex-1 h-1 mx-2 ${
-                          i < step ? "bg-green-500" : "bg-gray-200"
-                        }`}
-                      ></div>
-                    )}
-                  </React.Fragment>
-                ))}
-              </div>
-              <div className="flex justify-between mt-2 text-xs text-foreground/60">
-                <span>Personal Info</span>
-                <span>Subjects</span>
-                <span>Complete</span>
-              </div>
+            <div>
+              <h1 className="text-2xl font-bold text-foreground mb-2">
+                Examination Registration
+              </h1>
+              <p className="text-foreground/70 text-sm">
+                Register for CEC Mock Examinations
+              </p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6">
-            {renderStep()}
-          </form>
-        </div>
+          {/* Compact card layout */}
+          <div className="bg-card rounded-lg shadow-md overflow-hidden">
+            {/* Progress indicator header - Updated to show only 4 steps */}
+            <div className="p-3 border-b border-border">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-1 flex-1">
+                  {[1, 2, 3, 4].map((i) => (
+                    <React.Fragment key={i}>
+                      <div
+                        className={`flex items-center justify-center w-6 h-6 rounded-full text-xs ${
+                          i < step
+                            ? "bg-green-500 text-white"
+                            : i === step
+                              ? "bg-primary text-white"
+                              : "bg-gray-200 text-primary/50"
+                        }`}
+                      >
+                        {i < step ? <CheckCircle className="w-3 h-3" /> : i}
+                      </div>
+                      {i < 4 && (
+                        <div
+                          className={`w-2 h-0.5 ${
+                            i < step ? "bg-green-500" : "bg-gray-200"
+                          }`}
+                        ></div>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+              </div>
+              <div className="flex justify-between mt-1 text-xs text-foreground/60">
+                <span>Personal Info</span>
+                <span>Review</span>
+                <span>Terms</span>
+                <span>Complete</span>
+              </div>
+            </div>
 
-        {/* Examination Resources */}
-        <ExaminationResources />
+            {/* Form content */}
+            <form onSubmit={handleSubmit}>
+              <div className="p-4">{renderStep()}</div>
+            </form>
+          </div>
+        </div>
       </div>
-    </div>
+    </main>
   );
 }

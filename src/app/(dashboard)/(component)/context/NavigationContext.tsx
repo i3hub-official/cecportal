@@ -1,13 +1,16 @@
+// NavigationContext.tsx
 "use client";
 import React, { createContext, useContext, useState } from "react";
 
 interface NavigationContextType {
   sidebarOpen: boolean;
-  activeMenu: string;
-  expandedMenus: string[];
+  activeMenu: string; // active child or parent without submenu
+  activeParent: string | null; // track parent separately
+  menuClickKey: number; // unique key to force reloads
   toggleSidebar: () => void;
   setActiveMenu: (menuId: string) => void;
-  toggleSubmenu: (menuId: string) => void;
+  setActiveParent: (parentId: string | null) => void;
+  forceMenuUpdate: () => void; // New function to force update on any click
 }
 
 const NavigationContext = createContext<NavigationContextType | undefined>(
@@ -19,22 +22,23 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState("dashboard");
-  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
+  const [activeParent, setActiveParent] = useState<string | null>(null);
+  const [menuClickKey, setMenuClickKey] = useState<number>(Date.now());
 
-  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
-  const handleMenuClick = (menuId: string) => {
+  const handleSetActiveMenu = (menuId: string) => {
     setActiveMenu(menuId);
-    setExpandedMenus([]);
-    setSidebarOpen(false);
+    setMenuClickKey(Date.now()); // ✅ update key every click
   };
 
-  const toggleSubmenu = (menuId: string) => {
-    if (!expandedMenus.includes(menuId)) {
-      setExpandedMenus([menuId]);
-    } else {
-      setExpandedMenus(expandedMenus.filter((id) => id !== menuId));
-    }
+  const handleSetActiveParent = (parentId: string | null) => {
+    setActiveParent(parentId);
+    setMenuClickKey(Date.now()); // ✅ update key every click
+  };
+
+  const forceMenuUpdate = () => {
+    setMenuClickKey(Date.now()); // ✅ update key on any click
   };
 
   return (
@@ -42,10 +46,12 @@ export const NavigationProvider: React.FC<{ children: React.ReactNode }> = ({
       value={{
         sidebarOpen,
         activeMenu,
-        expandedMenus,
+        activeParent,
+        menuClickKey,
         toggleSidebar,
-        setActiveMenu: handleMenuClick,
-        toggleSubmenu,
+        setActiveMenu: handleSetActiveMenu,
+        setActiveParent: handleSetActiveParent,
+        forceMenuUpdate, // Add the new function
       }}
     >
       {children}
