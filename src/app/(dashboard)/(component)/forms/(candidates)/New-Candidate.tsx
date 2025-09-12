@@ -15,6 +15,7 @@ import {
   User2Icon,
   CreditCard,
   LocationEdit,
+  Edit,
 } from "lucide-react";
 
 // Cache for LGAs to avoid repeated API calls
@@ -257,6 +258,7 @@ export default function CandidateRegistrationPage() {
       };
       reader.readAsDataURL(file);
 
+      // Clear any existing error
       setErrors((prev) => ({ ...prev, passport: "" }));
     }
   };
@@ -264,15 +266,16 @@ export default function CandidateRegistrationPage() {
   const validateStep1 = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.surname) newErrors.surname = "Surname is required";
-    if (!formData.firstName) newErrors.firstName = "First name is required";
+    if (!formData.surname.trim()) newErrors.surname = "Surname is required";
+    if (!formData.firstName.trim())
+      newErrors.firstName = "First name is required";
     if (!formData.dateOfBirth)
       newErrors.dateOfBirth = "Date of birth is required";
     if (!formData.gender) newErrors.gender = "Gender is required";
     if (!formData.state) newErrors.state = "State is required";
     if (!formData.lga) newErrors.lga = "LGA is required";
-    if (!formData.nin) newErrors.nin = "NIN is required";
-    if (!formData.phoneNumber)
+    if (!formData.nin.trim()) newErrors.nin = "NIN is required";
+    if (!formData.phoneNumber.trim())
       newErrors.phoneNumber = "Phone number is required";
     if (!formData.passport)
       newErrors.passport = "Passport photograph is required";
@@ -280,14 +283,31 @@ export default function CandidateRegistrationPage() {
     // Validate phone number format
     if (
       formData.phoneNumber &&
-      !/^(\+234|0)[789][01]\d{8}$/.test(formData.phoneNumber)
+      !/^(\+234|0)[789][01]\d{8}$/.test(formData.phoneNumber.replace(/\s/g, ""))
     ) {
       newErrors.phoneNumber = "Please enter a valid Nigerian phone number";
     }
 
     // Validate NIN format (basic validation)
-    if (formData.nin && formData.nin.length !== 11) {
-      newErrors.nin = "NIN must be 11 digits";
+    if (formData.nin && !/^\d{11}$/.test(formData.nin.replace(/\s/g, ""))) {
+      newErrors.nin = "NIN must be exactly 11 digits";
+    }
+
+    // Validate age (must be at least 16 years old)
+    if (formData.dateOfBirth) {
+      const birthDate = new Date(formData.dateOfBirth);
+      const today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        age--;
+      }
+      if (age < 16) {
+        newErrors.dateOfBirth = "You must be at least 16 years old to register";
+      }
     }
 
     setErrors(newErrors);
@@ -321,10 +341,13 @@ export default function CandidateRegistrationPage() {
       acceptedTerms: false,
     });
     setPassportPreview(null);
-    setStep(1);
     setErrors({});
+    setStep(1);
+
+    // Clear localStorage
     localStorage.removeItem("cachedFormData");
     localStorage.removeItem("cachedPassportPreview");
+    localStorage.removeItem("cachedTimestamp");
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -333,10 +356,10 @@ export default function CandidateRegistrationPage() {
     if (validateStep2()) {
       setIsSubmitting(true);
 
-      // Clear form data from local storage on successful submission
+      // Simulate submission delay
       setTimeout(() => {
         setIsSubmitting(false);
-        setStep(3); // Success step
+        setStep(4); // Success step
         localStorage.removeItem("cachedFormData");
         localStorage.removeItem("cachedPassportPreview");
         localStorage.removeItem("cachedTimestamp");
@@ -470,7 +493,7 @@ export default function CandidateRegistrationPage() {
                     className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent ${
                       errors.dateOfBirth ? "border-red-500" : "border-border"
                     }`}
-                    placeholder="09/11/2025"
+                    max={new Date().toISOString().split("T")[0]}
                   />
                 </div>
                 {errors.dateOfBirth && (
@@ -694,6 +717,7 @@ export default function CandidateRegistrationPage() {
             </div>
 
             <button
+              type="button"
               onClick={() => {
                 if (validateStep1()) setStep(2);
               }}
@@ -708,7 +732,7 @@ export default function CandidateRegistrationPage() {
         return (
           <div className="space-y-6">
             {/* Info Section */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <div className="flex items-start">
                 <div className="flex-shrink-0">
                   <CheckCircle className="h-5 w-5 text-blue-400" />
@@ -719,102 +743,174 @@ export default function CandidateRegistrationPage() {
                   </h3>
                   <div className="mt-2 text-sm text-blue-700">
                     <p>
-                      Please review your information before submitting. You can
-                      go back to make changes if needed.
+                      Please review your information carefully before proceeding
+                      to terms and conditions.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Preview Data */}
-            <div className="bg-gray-50 rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-4">
-                Personal Information
-              </h3>
+            {/* Data Preview Card */}
+            <div className="bg-card border border-border rounded-xl shadow-sm p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Registration Preview
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="flex items-center gap-2 text-primary hover:text-primary/80 text-sm"
+                >
+                  <Edit className="w-4 h-4" />
+                  Edit
+                </button>
+              </div>
 
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Surname</p>
-                  <p className="text-base">{formData.surname || "N/A"}</p>
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Personal Information */}
+                <div className="space-y-3">
+                  <h4 className="font-medium text-foreground border-b pb-2">
+                    Personal Information
+                  </h4>
+
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">Full Name:</span>
+                      <span className="font-medium">
+                        {`${formData.surname} ${formData.firstName} ${formData.otherName || ""}`.trim()}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">Date of Birth:</span>
+                      <span className="font-medium">
+                        {formData.dateOfBirth}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">Gender:</span>
+                      <span className="font-medium">{formData.gender}</span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">Phone Number:</span>
+                      <span className="font-medium">
+                        {formData.phoneNumber}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">NIN:</span>
+                      <span className="font-medium">{formData.nin}</span>
+                    </div>
+
+                    {formData.disability && (
+                      <div className="flex justify-between">
+                        <span className="text-foreground/70">Disability:</span>
+                        <span className="font-medium">
+                          {formData.disability}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    First Name
-                  </p>
-                  <p className="text-base">{formData.firstName || "N/A"}</p>
-                </div>
+                {/* Location & Photo */}
+                <div className="space-y-3">
+                  <h4 className="font-medium text-foreground border-b pb-2">
+                    Location & Photo
+                  </h4>
 
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Other Name
-                  </p>
-                  <p className="text-base">{formData.otherName || "N/A"}</p>
-                </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">State:</span>
+                      <span className="font-medium">{formData.state}</span>
+                    </div>
 
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Date of Birth
-                  </p>
-                  <p className="text-base">{formData.dateOfBirth || "N/A"}</p>
-                </div>
+                    <div className="flex justify-between">
+                      <span className="text-foreground/70">LGA:</span>
+                      <span className="font-medium">{formData.lga}</span>
+                    </div>
 
-                <div>
-                  <p className="text-sm font-medium text-gray-600">Gender</p>
-                  <p className="text-base">{formData.gender || "N/A"}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Disability
-                  </p>
-                  <p className="text-base">{formData.disability || "None"}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-600">State</p>
-                  <p className="text-base">{formData.state || "N/A"}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-600">LGA</p>
-                  <p className="text-base">{formData.lga || "N/A"}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-600">NIN</p>
-                  <p className="text-base">{formData.nin || "N/A"}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-600">
-                    Phone Number
-                  </p>
-                  <p className="text-base">{formData.phoneNumber || "N/A"}</p>
-                </div>
-
-                <div className="md:col-span-2">
-                  <p className="text-sm font-medium text-gray-600">
-                    Passport Photo
-                  </p>
-                  {passportPreview ? (
-                    <Image
-                      src={passportPreview}
-                      alt="Passport preview"
-                      width={100}
-                      height={100}
-                      className="w-24 h-24 rounded-full object-cover mt-2"
-                    />
-                  ) : (
-                    <p className="text-base">No photo uploaded</p>
-                  )}
+                    <div className="mt-4">
+                      <span className="text-foreground/70 block mb-2">
+                        Passport Photo:
+                      </span>
+                      {passportPreview ? (
+                        <Image
+                          src={passportPreview}
+                          alt="Passport photo"
+                          width={80}
+                          height={80}
+                          className="w-20 h-20 rounded-lg object-cover border"
+                        />
+                      ) : (
+                        <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                          <User className="w-8 h-8 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
+            {/* Navigation */}
+            <div className="flex flex-col sm:flex-row justify-between gap-3 mt-8">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="w-full sm:w-auto px-6 py-3 border border-primary text-primary rounded-lg font-medium hover:bg-primary/10 transition"
+              >
+                Back to Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => setStep(3)}
+                className="w-full sm:w-auto px-6 py-3 bg-primary text-white rounded-lg font-medium hover:bg-primary/90 transition"
+              >
+                Continue to Terms
+              </button>
+            </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            {/* Info Section */}
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <CheckCircle className="h-5 w-5 text-green-400" />
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-green-800">
+                    Terms and Conditions
+                  </h3>
+                  <div className="mt-2 text-sm text-green-700">
+                    <p>
+                      Please review and accept the terms and conditions to
+                      complete your registration.
+                    </p>
+                    <br />
+                    <p>Scroll down to review the full terms and conditions.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Error */}
+            {errors.acceptedTerms && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-700">{errors.acceptedTerms}</p>
+              </div>
+            )}
+
             {/* Terms and Conditions Content */}
-            <div className="bg-card  rounded-lg p-6 max-h-96 overflow-y-auto">
+            <div className="bg-card rounded-lg p-6 max-h-96 overflow-y-auto">
               <h3 className="text-lg font-semibold mb-4">
                 Terms and Conditions
               </h3>
@@ -868,11 +964,6 @@ export default function CandidateRegistrationPage() {
                     above.
                   </span>
                 </label>
-                {errors.acceptedTerms && (
-                  <p className="mt-1 text-sm text-red-500">
-                    {errors.acceptedTerms}
-                  </p>
-                )}
               </div>
             </div>
 
@@ -880,10 +971,10 @@ export default function CandidateRegistrationPage() {
             <div className="flex flex-col sm:flex-row justify-between gap-3 mt-8">
               <button
                 type="button"
-                onClick={() => setStep(1)}
+                onClick={() => setStep(2)}
                 className="w-full sm:w-auto px-6 py-3 border border-primary text-primary rounded-lg font-medium hover:bg-primary/10 transition"
               >
-                Back to Edit
+                Back to Review
               </button>
               <button
                 type="submit"
@@ -903,7 +994,7 @@ export default function CandidateRegistrationPage() {
           </div>
         );
 
-      case 3:
+      case 4:
         return (
           <div className="text-center py-8">
             {/* Success Icon */}
@@ -964,6 +1055,7 @@ export default function CandidateRegistrationPage() {
             {/* Actions */}
             <div className="space-y-4 max-w-xs mx-auto mt-8">
               <button
+                type="button"
                 onClick={resetForm}
                 className="block w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 transition"
               >
@@ -992,7 +1084,16 @@ export default function CandidateRegistrationPage() {
         <div className="max-w-7xl mx-auto">
           {/* Back link and title section */}
           <div className="mb-6">
-                       <div>
+            <button
+              type="button"
+              onClick={() => router.push("/dashboard")}
+              className="inline-flex items-center gap-2 text-primary hover:underline mb-4 text-sm"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Dashboard
+            </button>
+
+            <div>
               <h1 className="text-2xl font-bold text-foreground mb-2">
                 Candidate Registration
               </h1>
@@ -1004,11 +1105,11 @@ export default function CandidateRegistrationPage() {
 
           {/* Compact card layout */}
           <div className="bg-card rounded-lg shadow-md overflow-hidden">
-            {/* Progress indicator header */}
+            {/* Progress indicator header - Updated to show only 4 steps */}
             <div className="p-3 border-b border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-1 flex-1">
-                  {[1, 2, 3].map((i) => (
+                  {[1, 2, 3, 4].map((i) => (
                     <React.Fragment key={i}>
                       <div
                         className={`flex items-center justify-center w-6 h-6 rounded-full text-xs ${
@@ -1021,9 +1122,9 @@ export default function CandidateRegistrationPage() {
                       >
                         {i < step ? <CheckCircle className="w-3 h-3" /> : i}
                       </div>
-                      {i < 3 && (
+                      {i < 4 && (
                         <div
-                          className={`w-8 h-0.5 ${
+                          className={`w-2 h-0.5 ${
                             i < step ? "bg-green-500" : "bg-gray-200"
                           }`}
                         ></div>
@@ -1035,6 +1136,7 @@ export default function CandidateRegistrationPage() {
               <div className="flex justify-between mt-1 text-xs text-foreground/60">
                 <span>Personal Info</span>
                 <span>Review</span>
+                <span>Terms</span>
                 <span>Complete</span>
               </div>
             </div>
