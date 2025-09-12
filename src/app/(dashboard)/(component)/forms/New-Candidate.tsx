@@ -992,18 +992,9 @@ export default function CandidateRegistrationPage() {
         <div className="max-w-7xl mx-auto">
           {/* Back link and title section */}
           <div className="mb-6">
-            <button
-              type="button"
-              onClick={() => router.push("/dashboard")}
-              className="inline-flex items-center gap-2 text-primary hover:underline mb-4 text-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Dashboard
-            </button>
-
-            <div>
+                       <div>
               <h1 className="text-2xl font-bold text-foreground mb-2">
-                Examination Registration
+                Candidate Registration
               </h1>
               <p className="text-foreground/70 text-sm">
                 Register for CEC Mock Examinations

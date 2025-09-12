@@ -1095,7 +1095,7 @@ export default function CandidateRegistrationPage() {
 
             <div>
               <h1 className="text-2xl font-bold text-foreground mb-2">
-                Examination Registration
+                Candidate Registration
               </h1>
               <p className="text-foreground/70 text-sm">
                 Register for CEC Mock Examinations
