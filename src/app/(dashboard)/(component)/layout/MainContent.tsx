@@ -5,9 +5,9 @@ import DashboardContent from "../content/DashboardContent";
 import PlaceholderContent from "../content/PlaceholderContent";
 
 // Candidate Forms
-import NewCandidate from "../forms/New-Candidate";
+import NewCandidate from "../forms/(candidates)/New-Candidate";
 // import ModifyCandidate from "../forms/Modify-Candidate";
-// import ViewCandidate from "../forms/View-Candidate";
+import ViewCandidate from "../forms/(candidates)/View-Candidate";
 
 // Assessment Forms
 // import ComputeAssessment from "../forms/Compute-Assessment";
@@ -38,7 +38,7 @@ const contentMap: Record<string, React.ReactNode> = {
   // Candidates
   "new-candidate": <NewCandidate />,
   "modify-candidate": <PlaceholderContent />,
-  "view-candidate": <PlaceholderContent />,
+  "view-candidate": <ViewCandidate />,
   "candidate-reports": <PlaceholderContent />,
 
   // Assessment
