@@ -255,7 +255,7 @@ export default function LoginPage() {
 
             <div className="mt-4 text-center">
               <Link
-                href="/registration"
+                href="/school"
                 className="inline-flex items-center px-4 py-2 border border-primary text-primary rounded-lg font-medium hover:bg-primary/10 transition"
               >
                 <School className="w-5 h-5 mr-2" />

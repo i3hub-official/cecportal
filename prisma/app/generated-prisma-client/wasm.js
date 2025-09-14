@@ -120,9 +120,233 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
+exports.Prisma.SchoolScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  centerNumber: 'centerNumber',
+  centerName: 'centerName',
+  state: 'state',
+  lga: 'lga',
+  schoolEmail: 'schoolEmail',
+  schoolPhone: 'schoolPhone',
+  schoolAddress: 'schoolAddress',
+  schoolType: 'schoolType',
+  principalName: 'principalName',
+  principalPhone: 'principalPhone',
+  examOfficerPhone: 'examOfficerPhone',
+  isActive: 'isActive',
+  isVerified: 'isVerified',
+  verifiedAt: 'verifiedAt',
+  verifiedBy: 'verifiedBy'
+};
+
+exports.Prisma.AdminUserScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  email: 'email',
+  phone: 'phone',
+  password: 'password',
+  isActive: 'isActive',
+  emailVerified: 'emailVerified',
+  emailVerifiedAt: 'emailVerifiedAt',
+  lastLoginAt: 'lastLoginAt',
+  schoolId: 'schoolId',
+  role: 'role'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  sessionToken: 'sessionToken',
+  adminUserId: 'adminUserId',
+  expires: 'expires',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CandidateScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  surname: 'surname',
+  firstName: 'firstName',
+  otherName: 'otherName',
+  dateOfBirth: 'dateOfBirth',
+  gender: 'gender',
+  nin: 'nin',
+  phoneNumber: 'phoneNumber',
+  disability: 'disability',
+  state: 'state',
+  lga: 'lga',
+  passportPhotoUrl: 'passportPhotoUrl',
+  registrationNumber: 'registrationNumber',
+  acceptedTerms: 'acceptedTerms',
+  registrationStatus: 'registrationStatus',
+  schoolId: 'schoolId',
+  createdById: 'createdById',
+  examSessionId: 'examSessionId',
+  submittedAt: 'submittedAt',
+  verifiedAt: 'verifiedAt',
+  verifiedBy: 'verifiedBy'
+};
+
+exports.Prisma.ExamSessionScalarFieldEnum = {
+  id: 'id',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  name: 'name',
+  description: 'description',
+  examDate: 'examDate',
+  examTime: 'examTime',
+  duration: 'duration',
+  registrationStartDate: 'registrationStartDate',
+  registrationEndDate: 'registrationEndDate',
+  status: 'status',
+  isActive: 'isActive',
+  registrationFee: 'registrationFee'
+};
+
+exports.Prisma.PasswordResetTokenScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  token: 'token',
+  expires: 'expires',
+  createdAt: 'createdAt',
+  used: 'used',
+  usedAt: 'usedAt'
+};
+
+exports.Prisma.EmailVerificationTokenScalarFieldEnum = {
+  id: 'id',
+  email: 'email',
+  token: 'token',
+  expires: 'expires',
+  createdAt: 'createdAt',
+  used: 'used',
+  usedAt: 'usedAt'
+};
+
+exports.Prisma.StateScalarFieldEnum = {
+  id: 'id',
+  name: 'name'
+};
+
+exports.Prisma.LGAScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  stateId: 'stateId'
+};
+
+exports.Prisma.CandidateAuditLogScalarFieldEnum = {
+  id: 'id',
+  candidateId: 'candidateId',
+  action: 'action',
+  changes: 'changes',
+  performedBy: 'performedBy',
+  performedAt: 'performedAt',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent'
+};
+
+exports.Prisma.AdminAuditLogScalarFieldEnum = {
+  id: 'id',
+  adminUserId: 'adminUserId',
+  action: 'action',
+  details: 'details',
+  performedAt: 'performedAt',
+  ipAddress: 'ipAddress',
+  userAgent: 'userAgent'
+};
+
+exports.Prisma.SystemConfigScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  value: 'value',
+  description: 'description',
+  updatedAt: 'updatedAt',
+  updatedBy: 'updatedBy'
+};
+
+exports.Prisma.SortOrder = {
+  asc: 'asc',
+  desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.QueryMode = {
+  default: 'default',
+  insensitive: 'insensitive'
+};
+
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
+};
+exports.SchoolType = exports.$Enums.SchoolType = {
+  SECONDARY: 'SECONDARY',
+  SEMINARY: 'SEMINARY'
+};
+
+exports.AdminRole = exports.$Enums.AdminRole = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  ADMIN: 'ADMIN',
+  OPERATOR: 'OPERATOR'
+};
+
+exports.Gender = exports.$Enums.Gender = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE'
+};
+
+exports.Disability = exports.$Enums.Disability = {
+  VISUAL: 'VISUAL',
+  HEARING: 'HEARING',
+  PHYSICAL: 'PHYSICAL',
+  LEARNING: 'LEARNING',
+  OTHER: 'OTHER'
+};
+
+exports.RegistrationStatus = exports.$Enums.RegistrationStatus = {
+  PENDING: 'PENDING',
+  SUBMITTED: 'SUBMITTED',
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.ExamSessionStatus = exports.$Enums.ExamSessionStatus = {
+  UPCOMING: 'UPCOMING',
+  REGISTRATION_OPEN: 'REGISTRATION_OPEN',
+  REGISTRATION_CLOSED: 'REGISTRATION_CLOSED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED'
+};
 
 exports.Prisma.ModelName = {
-
+  School: 'School',
+  AdminUser: 'AdminUser',
+  Session: 'Session',
+  Candidate: 'Candidate',
+  ExamSession: 'ExamSession',
+  PasswordResetToken: 'PasswordResetToken',
+  EmailVerificationToken: 'EmailVerificationToken',
+  State: 'State',
+  LGA: 'LGA',
+  CandidateAuditLog: 'CandidateAuditLog',
+  AdminAuditLog: 'AdminAuditLog',
+  SystemConfig: 'SystemConfig'
 };
 
 /**

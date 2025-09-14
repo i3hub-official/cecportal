@@ -350,22 +350,153 @@ export default function CandidateRegistrationPage() {
     localStorage.removeItem("cachedTimestamp");
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (validateStep2()) {
-      setIsSubmitting(true);
+    if (!validateStep2()) {
+      return;
+    }
 
-      // Simulate submission delay
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setStep(4); // Success step
-        localStorage.removeItem("cachedFormData");
-        localStorage.removeItem("cachedPassportPreview");
-        localStorage.removeItem("cachedTimestamp");
-      }, 2000);
+    setIsSubmitting(true);
+    setApiError(null);
+
+    try {
+      // Create FormData object for file upload
+      const submitFormData = new FormData();
+
+      // Append all form fields
+      submitFormData.append("surname", formData.surname.trim());
+      submitFormData.append("firstName", formData.firstName.trim());
+      submitFormData.append("otherName", formData.otherName.trim());
+      submitFormData.append("dateOfBirth", formData.dateOfBirth);
+      submitFormData.append("gender", formData.gender);
+      submitFormData.append("state", formData.state);
+      submitFormData.append("lga", formData.lga);
+      submitFormData.append("nin", formData.nin.replace(/\s/g, ""));
+      submitFormData.append(
+        "phoneNumber",
+        formData.phoneNumber.replace(/\s/g, "")
+      );
+      submitFormData.append("disability", formData.disability || "None");
+      submitFormData.append("acceptedTerms", formData.acceptedTerms.toString());
+
+      // Append passport file
+      if (formData.passport) {
+        submitFormData.append("passport", formData.passport);
+      }
+
+      // Make API call to backend
+      const response = await fetch("enrol/api/register", {
+        method: "POST",
+        body: submitFormData,
+        // Don't set Content-Type header - let the browser set it for FormData
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Registration successful
+        console.log("Registration successful:", result);
+
+        // Store registration details for success page
+        const registrationDetails = {
+          registrationId: result.data.registrationId,
+          registrationDate: result.data.registrationDate,
+          status: result.data.status,
+        };
+
+        // Store in sessionStorage (temporary storage)
+        sessionStorage.setItem(
+          "registrationDetails",
+          JSON.stringify(registrationDetails)
+        );
+
+        // Clear form data and cache
+        resetForm();
+
+        // Move to success step
+        setStep(4);
+      } else {
+        // Handle API errors
+        if (result.errors) {
+          // Validation errors from backend
+          setErrors(result.errors);
+
+          // If there are step 1 validation errors, go back to step 1
+          const step1Fields = [
+            "surname",
+            "firstName",
+            "dateOfBirth",
+            "gender",
+            "state",
+            "lga",
+            "nin",
+            "phoneNumber",
+            "passport",
+          ];
+          const hasStep1Errors = Object.keys(result.errors).some((field) =>
+            step1Fields.includes(field)
+          );
+
+          if (hasStep1Errors) {
+            setStep(1);
+          }
+        } else {
+          // General error
+          setApiError(result.error || "Registration failed. Please try again.");
+        }
+      }
+    } catch (error) {
+      console.error("Registration error:", error);
+
+      // Check if it's a network error
+      if (error instanceof TypeError && error.message === "Failed to fetch") {
+        setApiError(
+          "Network error. Please check your internet connection and try again."
+        );
+      } else {
+        setApiError("An unexpected error occurred. Please try again later.");
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  // Also add this helper function to retrieve registration details on success page
+  const getRegistrationDetails = () => {
+    const stored = sessionStorage.getItem("registrationDetails");
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch (error) {
+        console.error("Error parsing registration details:", error);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  // Add this to your component to show registration details on success page
+  const [registrationDetails, setRegistrationDetails] = useState<{
+    registrationId: string;
+    registrationDate: string;
+    status: string;
+  } | null>(null);
+
+  // Add this useEffect to load registration details when reaching success step
+  useEffect(() => {
+    if (step === 4) {
+      const details = getRegistrationDetails();
+      setRegistrationDetails(details);
+
+      // Clear the details from sessionStorage after loading
+      sessionStorage.removeItem("registrationDetails");
+      localStorage.removeItem("cachedFormData");
+      localStorage.removeItem("cachedPassportPreview");
+      localStorage.removeItem("cachedTimestamp");
+    }
+  }, [step]);
 
   const showValidationSummary = Object.keys(errors).length > 0;
 

@@ -6,10 +6,306 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "./app/generated-prisma-client"
+  // output   = "./app/generated-prisma-client"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("PRISMA_DATABASE_URL")
+}
+
+// School/Center Management
+model School {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Basic Information (from registration form)
+  centerNumber String @unique // Center number from CEC
+  centerName   String // School name
+  state        String
+  lga          String
+
+  // Contact Information
+  schoolEmail   String @unique
+  schoolPhone   String
+  schoolAddress String @db.Text
+
+  // School Details
+  schoolType       SchoolType
+  principalName    String
+  principalPhone   String
+  examOfficerPhone String?
+
+  // Status
+  isActive   Boolean   @default(true)
+  isVerified Boolean   @default(false)
+  verifiedAt DateTime?
+  verifiedBy String? // Admin user ID who verified
+
+  // Relationships
+  adminUsers   AdminUser[]
+  candidates   Candidate[]
+  examSessions ExamSession[]
+
+  @@map("schools")
+}
+
+// Admin Users (School administrators)
+model AdminUser {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Personal Information
+  name     String
+  email    String @unique
+  phone    String
+  password String // Hashed password
+
+  // Account Status
+  isActive        Boolean   @default(true)
+  emailVerified   Boolean   @default(false)
+  emailVerifiedAt DateTime?
+  lastLoginAt     DateTime?
+
+  // School Association
+  schoolId String
+  school   School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  role     AdminRole @default(Admin)
+
+  // Relationships
+  sessions          Session[]
+  candidatesCreated Candidate[]     @relation("CandidateCreatedBy")
+  auditLogs         AdminAuditLog[]
+
+  @@map("admin_users")
+}
+
+// User Sessions for authentication
+model Session {
+  id           String    @id @default(cuid())
+  sessionToken String    @unique
+  adminUserId  String
+  adminUser    AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  expires      DateTime
+  createdAt    DateTime  @default(now())
+
+  @@map("sessions")
+}
+
+// Candidates (updated with school relationship)
+model Candidate {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Personal Information
+  surname     String
+  firstName   String
+  otherName   String?
+  dateOfBirth DateTime
+  gender      Gender
+  nin         String      @unique
+  phoneNumber String
+  disability  Disability?
+
+  // Location
+  state String
+  lga   String
+
+  // File uploads
+  passportPhotoUrl String?
+
+  // Registration metadata
+  registrationNumber String             @unique
+  acceptedTerms      Boolean            @default(false)
+  registrationStatus RegistrationStatus @default(Pending)
+
+  // School Association
+  schoolId    String
+  school      School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  createdById String // Admin user who registered this candidate
+  createdBy   AdminUser @relation("CandidateCreatedBy", fields: [createdById], references: [id])
+
+  // Exam Association
+  examSessionId String?
+  examSession   ExamSession? @relation(fields: [examSessionId], references: [id])
+
+  // Audit fields
+  submittedAt DateTime?
+  verifiedAt  DateTime?
+  verifiedBy  String?
+
+  @@map("candidates")
+}
+
+// Exam Sessions (for different exam periods)
+model ExamSession {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Session Information
+  name        String // e.g., "2024 First Quarter Mock Exam"
+  description String?  @db.Text
+  examDate    DateTime
+  examTime    String // e.g., "09:00 AM"
+  duration    Int // Duration in minutes
+
+  // Registration Period
+  registrationStartDate DateTime
+  registrationEndDate   DateTime
+
+  // Status
+  status   ExamSessionStatus @default(Upcoming)
+  isActive Boolean           @default(true)
+
+  // Fees
+  registrationFee Decimal @db.Decimal(10, 2)
+
+  // Relationships
+  candidates Candidate[]
+  schools    School[]
+
+  @@map("exam_sessions")
+}
+
+// Password Reset Tokens
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  email     String
+  token     String    @unique
+  expires   DateTime
+  createdAt DateTime  @default(now())
+  used      Boolean   @default(false)
+  usedAt    DateTime?
+
+  @@map("password_reset_tokens")
+}
+
+// Email Verification Tokens
+model EmailVerificationToken {
+  id        String    @id @default(cuid())
+  email     String
+  token     String    @unique
+  expires   DateTime
+  createdAt DateTime  @default(now())
+  used      Boolean   @default(false)
+  usedAt    DateTime?
+
+  @@map("email_verification_tokens")
+}
+
+// Nigerian States and LGAs for referential integrity
+model State {
+  id   String @id @default(cuid())
+  name String @unique
+  lgas LGA[]
+
+  @@map("states")
+}
+
+model LGA {
+  id      String @id @default(cuid())
+  name    String
+  stateId String
+  state   State  @relation(fields: [stateId], references: [id], onDelete: Cascade)
+
+  @@unique([name, stateId])
+  @@map("lgas")
+}
+
+// Audit Logs
+model CandidateAuditLog {
+  id          String   @id @default(cuid())
+  candidateId String
+  action      String // e.g., "CREATED", "UPDATED", "VERIFIED", "REJECTED"
+  changes     Json? // Store what changed
+  performedBy String? // User ID who performed the action
+  performedAt DateTime @default(now())
+  ipAddress   String?
+  userAgent   String?
+
+  @@map("candidate_audit_logs")
+}
+
+model AdminAuditLog {
+  id          String    @id @default(cuid())
+  adminUserId String
+  adminUser   AdminUser @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  action      String // e.g., "LOGIN", "CREATED_CANDIDATE", "UPDATED_SCHOOL"
+  details     Json? // Additional action details
+  performedAt DateTime  @default(now())
+  ipAddress   String?
+  userAgent   String?
+
+  @@map("admin_audit_logs")
+}
+
+// System Configuration
+model SystemConfig {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  updatedAt   DateTime @updatedAt
+  updatedBy   String? // Admin user ID who updated
+
+  @@map("system_config")
+}
+
+// Enums
+enum Gender {
+  Male
+  Female
+
+  @@map("gender")
+}
+
+enum Disability {
+  None
+  Visual
+  Hearing
+  Physical
+  Learning
+  Other
+
+  @@map("disability")
+}
+
+enum RegistrationStatus {
+  Pending
+  Submitted
+  Verified
+  Rejected
+  Cancelled
+
+  @@map("registration_status")
+}
+
+enum SchoolType {
+  Secondary
+  Seminary
+
+  @@map("school_type")
+}
+
+enum AdminRole {
+  Super_Admin
+  Admin
+  Operator
+
+  @@map("admin_role")
+}
+
+enum ExamSessionStatus {
+  Upcoming
+  Registration_Open
+  Registration_Closed
+  In_Progress
+  Completed
+  Cancelled
+
+  @@map("exam_session_status")
 }

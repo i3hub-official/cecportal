@@ -200,7 +200,7 @@ export default function ExamRegistrationLandingPage() {
 
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <Link
-                    href="/registration"
+                    href="/school"
                     className="block w-full bg-primary text-white text-center py-3 rounded-lg font-medium hover:bg-primary/90 transition"
                   >
                     Create School Account

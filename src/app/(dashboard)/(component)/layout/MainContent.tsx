@@ -22,7 +22,7 @@ import ViewCandidate from "../forms/(candidates)/View-Candidate";
 
 // Reports
 // import PhotoCard from "../forms/Photo-Card";
-// import RegistrationReport from "../forms/Registration-Report";
+// import RegistrationReport from "../forms/school-Report";
 // import PerformanceReport from "../forms/Performance-Report";
 // import FinancialReport from "../forms/Financial-Report";
 

@@ -7,10 +7,13 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "db:generate": "prisma generate", 
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev"
   },
   "dependencies": {
-    "@prisma/client": "^6.15.0",
+    "@prisma/client": "^6.16.1",
     "@prisma/extension-accelerate": "^2.0.2",
     "@react-email/components": "^0.5.3",
     "@react-email/render": "^1.2.3",

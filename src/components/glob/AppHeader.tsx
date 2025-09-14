@@ -112,7 +112,7 @@ export default function AppHeader() {
           <div className="md:hidden bg-card border-t border-bordermt-4 flex flex-col divide-y divide-gray-200 sm:hidden border border-card rounded-md shadow-sm p-4 space-y-4">
             <div className="flex gap-2">
               <Link
-                href="/registration"
+                href="/school"
                 className="flex-1 flex items-center justify-center bg-transparent hover:bg-primary/10 text-foreground font-medium py-2 px-3 rounded-md transition"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
