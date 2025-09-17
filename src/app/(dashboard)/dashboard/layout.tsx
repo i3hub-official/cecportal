@@ -1,3 +1,4 @@
+// global layout
 import { ThemeProvider } from "@/app/(dashboard)/(component)/context/ThemeContext";
 import { LoadingProvider } from "@/app/(dashboard)/(component)/context/LoadingContext";
 import { NavigationProvider } from "@/app/(dashboard)/(component)/context/NavigationContext";

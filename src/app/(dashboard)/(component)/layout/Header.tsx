@@ -1,3 +1,4 @@
+// src\app\(dashboard)\(component)\layout\Header.tsx
 "use client";
 import React from "react";
 import { Menu, Search, Bell, Sun, Moon } from "lucide-react";
